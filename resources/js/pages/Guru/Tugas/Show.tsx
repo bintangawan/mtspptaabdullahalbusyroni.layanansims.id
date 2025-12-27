@@ -21,7 +21,7 @@ import { id } from 'date-fns/locale';
 import React, { useState } from 'react';
 // ⬇️ gunakan sub-komponen breadcrumb shadcn
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbSeparator } from '@/components/ui/breadcrumb';
-import { AlertCircle, ArrowLeft, Calendar, Edit, Eye, EyeOff, FileText, Trash2, Users, GraduationCap } from 'lucide-react';
+import { AlertCircle, ArrowLeft, Calendar, Edit, Eye, EyeOff, FileText, GraduationCap, Trash2, Users } from 'lucide-react';
 import { toast } from 'sonner';
 
 // Types
@@ -343,10 +343,7 @@ export default function TugasShow({ assignment }: Props) {
                                 <CardTitle>Daftar Submission</CardTitle>
                                 <CardDescription>Status pengumpulan tugas dari siswa</CardDescription>
                             </div>
-                            <Button 
-                                variant="outline" 
-                                onClick={() => router.get(`/guru/tugas/${assignment.id}/submissions`)}
-                            >
+                            <Button variant="outline" onClick={() => router.get(`/guru/tugas/${assignment.id}/submissions`)}>
                                 <GraduationCap className="mr-2 h-4 w-4" />
                                 Kelola Penilaian
                             </Button>
@@ -401,14 +398,14 @@ export default function TugasShow({ assignment }: Props) {
                                             {submission.submitted_at ? (
                                                 <Button
                                                     size="sm"
-                                                    variant={submission.score !== null ? "outline" : "default"}
+                                                    variant={submission.score !== null ? 'outline' : 'default'}
                                                     onClick={() => router.get(`/guru/submissions/${submission.id}/grade`)}
                                                 >
                                                     <GraduationCap className="mr-1 h-3 w-3" />
                                                     {submission.score !== null ? 'Edit Nilai' : 'Beri Nilai'}
                                                 </Button>
                                             ) : (
-                                                <span className="text-muted-foreground text-sm">Belum dikumpul</span>
+                                                <span className="text-sm text-muted-foreground">Belum dikumpul</span>
                                             )}
                                         </TableCell>
                                     </TableRow>
