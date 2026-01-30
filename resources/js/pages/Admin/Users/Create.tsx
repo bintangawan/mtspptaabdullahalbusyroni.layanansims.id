@@ -294,12 +294,12 @@ export default function Create({ roles, waliKelas = [] }: Props) {
                             <CardContent className="space-y-4">
                                 <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                                     <div className="space-y-2">
-                                        <Label htmlFor="nidn">NIDN</Label>
+                                        <Label htmlFor="nidn">PEG ID</Label>
                                         <Input
                                             id="nidn"
                                             value={data.nidn}
                                             onChange={(e) => setData('nidn', e.target.value)}
-                                            placeholder="Nomor Induk Dosen Nasional"
+                                            placeholder="Nomor Pegawai"
                                             className={errors.nidn ? 'border-red-500' : ''}
                                         />
                                         {err(errors.nidn)}

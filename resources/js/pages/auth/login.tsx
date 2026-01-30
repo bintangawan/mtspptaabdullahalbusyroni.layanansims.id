@@ -41,7 +41,7 @@ const Login: React.FC<LoginProps> = ({ canResetPassword, status }) => {
                             <span className="text-xl font-bold text-white">S</span>
                         </div>
                         <h1 className="mb-2 text-3xl font-bold text-gray-900">Selamat Datang</h1>
-                        <p className="text-gray-600">Masuk ke akun SISFO - MTs PPTA Abdullah Al Busyroni Anda</p>
+                        <p className="text-gray-600">Masuk ke akun SISFO -  PPTA Abdullah Al Busyroni Anda</p>
                     </motion.div>
 
                     {/* Status Message */}

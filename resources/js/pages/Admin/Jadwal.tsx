@@ -23,7 +23,7 @@ import AppLayout from '@/layouts/app-layout';
 import { SharedData } from '@/types';
 import { Head, router, useForm } from '@inertiajs/react';
 import { Clock, Edit, Plus, Search, Trash2 } from 'lucide-react';
-import { ReactNode, useMemo, useState } from 'react';
+import { ReactNode, useMemo, useState, useEffect } from 'react';
 import { toast } from 'sonner';
 
 /* ===================== Types ===================== */
@@ -64,11 +64,10 @@ interface Section {
 
 interface PaginationLink {
     url: string | null;
-    label: string; // bisa "&laquo;" atau angka string
+    label: string;
     active: boolean;
 }
 
-/** Bentuk standar paginator Laravel (tanpa meta wrapper) */
 interface LaravelPaginator<T> {
     data: T[];
     current_page: number;
@@ -77,7 +76,6 @@ interface LaravelPaginator<T> {
     to: number | null;
     total: number;
     links: PaginationLink[];
-    // properti lain diabaikan
 }
 
 interface Props extends SharedData {
@@ -121,6 +119,7 @@ function ConfirmDeleteDialog({
 }: ConfirmDeleteDialogProps) {
     const [typed, setTyped] = useState('');
     const [agreed, setAgreed] = useState(false);
+    // Pastikan tombol aktif jika input benar
     const canSubmit = typed.trim().toUpperCase() === confirmWord && agreed && !isLoading;
 
     return (
@@ -149,7 +148,10 @@ function ConfirmDeleteDialog({
                     <AlertDialogCancel className={`${buttonVariants({ variant: 'outline' })} rounded-xl`}>Batal</AlertDialogCancel>
                     <AlertDialogAction
                         disabled={!canSubmit}
-                        onClick={onConfirm}
+                        onClick={(e) => {
+                            e.preventDefault(); // Prevent auto close, let the parent handle logic
+                            if (canSubmit) onConfirm();
+                        }}
                         className={`${buttonVariants({ variant: 'destructive' })} gap-2 rounded-xl`}
                     >
                         <Trash2 className="h-4 w-4" />
@@ -175,6 +177,9 @@ export default function Jadwal({ sections, terms, subjects, gurus, activeTerm, f
     const [isEditOpen, setIsEditOpen] = useState(false);
     const [editingSection, setEditingSection] = useState<Section | null>(null);
 
+    // State untuk loading state manual saat delete (karena router.delete tidak return promise standar)
+    const [isDeleting, setIsDeleting] = useState(false);
+
     const [searchTerm, setSearchTerm] = useState<string>(filters.search ?? '');
     const [selectedTerm, setSelectedTerm] = useState<string>(filters.term_id ?? activeTerm?.id?.toString() ?? '');
 
@@ -183,10 +188,10 @@ export default function Jadwal({ sections, terms, subjects, gurus, activeTerm, f
         setData,
         post,
         put,
-        delete: destroy,
         processing,
         errors,
         reset,
+        clearErrors,
     } = useForm<FormData>({
         subject_id: '',
         guru_id: '',
@@ -206,6 +211,15 @@ export default function Jadwal({ sections, terms, subjects, gurus, activeTerm, f
         }),
         [sections],
     );
+
+    // Reset form saat modal create dibuka
+    useEffect(() => {
+        if (isCreateOpen) {
+            reset();
+            clearErrors();
+            setData('term_id', activeTerm?.id?.toString() ?? '');
+        }
+    }, [isCreateOpen]);
 
     const handleSearch = (): void => {
         router.get(
@@ -228,8 +242,10 @@ export default function Jadwal({ sections, terms, subjects, gurus, activeTerm, f
                 reset();
                 toast.success('Jadwal berhasil ditambahkan');
             },
-            onError: () => {
-                toast.error('Gagal menambahkan jadwal');
+            onError: (err) => {
+                toast.error('Gagal menambahkan jadwal. Cek form kembali.');
+                // Jika error spesifik dari backend (konflik)
+                if (err.jadwal) toast.error(err.jadwal);
             },
             preserveScroll: true,
         });
@@ -237,6 +253,7 @@ export default function Jadwal({ sections, terms, subjects, gurus, activeTerm, f
 
     const handleEdit = (section: Section): void => {
         setEditingSection(section);
+        clearErrors();
         setData({
             subject_id: section.subject.id.toString(),
             guru_id: section.guru.id.toString(),
@@ -259,9 +276,28 @@ export default function Jadwal({ sections, terms, subjects, gurus, activeTerm, f
                 reset();
                 toast.success('Jadwal berhasil diperbarui');
             },
-            onError: () => {
+            onError: (err) => {
                 toast.error('Gagal memperbarui jadwal');
+                if (err.jadwal) toast.error(err.jadwal);
             },
+            preserveScroll: true,
+        });
+    };
+
+    const handleDelete = (id: number) => {
+        setIsDeleting(true);
+        router.delete(route('admin.jadwal.destroy', id), {
+            onSuccess: () => {
+                toast.success('Jadwal berhasil dihapus');
+                setIsDeleting(false);
+            },
+            onError: (err) => {
+                setIsDeleting(false);
+                // Tampilkan pesan error spesifik dari backend jika ada
+                const msg = err.error || 'Gagal menghapus jadwal';
+                toast.error(msg);
+            },
+            onFinish: () => setIsDeleting(false),
             preserveScroll: true,
         });
     };
@@ -573,14 +609,8 @@ export default function Jadwal({ sections, terms, subjects, gurus, activeTerm, f
                                                             title={`Hapus jadwal "${section.subject.nama}"?`}
                                                             description={`Guru: ${section.guru.name}. Tindakan ini tidak dapat dibatalkan.`}
                                                             confirmWord="HAPUS"
-                                                            isLoading={processing}
-                                                            onConfirm={() =>
-                                                                destroy(route('admin.jadwal.destroy', section.id), {
-                                                                    onSuccess: () => toast.success('Jadwal berhasil dihapus'),
-                                                                    onError: () => toast.error('Gagal menghapus jadwal'),
-                                                                    preserveScroll: true,
-                                                                })
-                                                            }
+                                                            isLoading={isDeleting}
+                                                            onConfirm={() => handleDelete(section.id)}
                                                         />
                                                     </div>
                                                 </TableCell>

@@ -579,7 +579,7 @@ export default function MasterData({ terms, subjects, sections, gurus }: Props) 
                                     </Table>
                                 </div>
 
-                                <div className="mt-4 flex flex-col items-center justify-between gap-4 border-t pt-4 sm:flex-row">
+                                <div className="mt-4 flex flex-col items-center justify-start gap-4 border-t pt-4 sm:flex-row">
                                     <div className="text-sm text-muted-foreground">
                                         Hal <span className="font-medium">{subjects.meta.current_page}</span> dari{' '}
                                         <span className="font-medium">{subjects.meta.last_page}</span> ({subjects.meta.total} data)
@@ -712,7 +712,7 @@ export default function MasterData({ terms, subjects, sections, gurus }: Props) 
                                     </Table>
                                 </div>
 
-                                <div className="mt-4 flex flex-col items-center justify-between gap-4 border-t pt-4 sm:flex-row">
+                                <div className="mt-4 flex flex-col items-center justify-start gap-4 border-t pt-4 sm:flex-row">
                                     <div className="text-sm text-muted-foreground">
                                         Hal <span className="font-medium">{sections.meta.current_page}</span> dari{' '}
                                         <span className="font-medium">{sections.meta.last_page}</span> ({sections.meta.total} data)

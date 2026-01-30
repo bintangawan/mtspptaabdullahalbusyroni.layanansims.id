@@ -63,6 +63,11 @@ const getNavigationItems = (role: string): NavItem[] => {
                     href: '/admin/announcements',
                     icon: MessageSquare,
                 },
+                {
+                    title: 'Berita',
+                    href: '/admin/berita',
+                    icon: MessageSquare,
+                },
             ];
 
         case 'guru':

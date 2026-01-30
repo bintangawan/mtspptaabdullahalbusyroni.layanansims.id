@@ -37,7 +37,7 @@ class LandingController extends Controller
 
         // School information (you can move this to config or database)
         $schoolInfo = [
-            'name' => 'MTs PPTA Abdullah Al Busyroni - Sistem Informasi Manajemen Sekolah',
+            'name' => ' PPTA Abdullah Al Busyroni - Sistem Informasi Manajemen Sekolah',
             'description' => 'Platform pembelajaran digital yang menghubungkan siswa, guru, dan administrasi sekolah dalam satu sistem terintegrasi.',
             'features' => [
                 [
@@ -71,7 +71,7 @@ class LandingController extends Controller
             ],
             [
                 'question' => 'Apa saja fitur yang tersedia?',
-                'answer' => 'MTs PPTA Abdullah Al Busyroni menyediakan fitur pembelajaran digital, manajemen kelas, komunikasi terintegrasi, dan laporan analitik.'
+                'answer' => ' PPTA Abdullah Al Busyroni menyediakan fitur pembelajaran digital, manajemen kelas, komunikasi terintegrasi, dan laporan analitik.'
             ],
             [
                 'question' => 'Bagaimana cara mengakses materi pembelajaran?',
@@ -79,7 +79,7 @@ class LandingController extends Controller
             ],
             [
                 'question' => 'Apakah ada aplikasi mobile?',
-                'answer' => 'Saat ini MTs PPTA Abdullah Al Busyroni dapat diakses melalui web browser di perangkat mobile dengan tampilan responsif.'
+                'answer' => 'Saat ini  PPTA Abdullah Al Busyroni dapat diakses melalui web browser di perangkat mobile dengan tampilan responsif.'
             ]
         ];
 
@@ -100,7 +100,7 @@ class LandingController extends Controller
     public function about()
     {
         $schoolInfo = [
-            'name' => 'MTs PPTA Abdullah Al Busyroni - Sistem Informasi Manajemen Sekolah',
+            'name' => ' PPTA Abdullah Al Busyroni - Sistem Informasi Manajemen Sekolah',
             'vision' => 'Menjadi platform pembelajaran digital terdepan yang menghubungkan seluruh ekosistem pendidikan.',
             'mission' => [
                 'Menyediakan platform pembelajaran yang mudah digunakan dan terintegrasi',
@@ -138,16 +138,16 @@ class LandingController extends Controller
     {
         $contactInfo = [
             'school' => [
-                'name' => 'MTs PPTA Abdullah Al Busyroni School',
+                'name' => ' PPTA Abdullah Al Busyroni School',
                 'address' => 'Jl. Pendidikan No. 123, Jakarta',
                 'phone' => '+62 21 1234 5678',
-                'email' => 'info@MTs PPTA Abdullah Al Busyroni-school.edu',
-                'website' => 'https://MTs PPTA Abdullah Al Busyroni-school.edu'
+                'email' => 'info@ PPTA Abdullah Al Busyroni-school.edu',
+                'website' => 'https:// PPTA Abdullah Al Busyroni-school.edu'
             ],
             'support' => [
-                'technical' => 'support@MTs PPTA Abdullah Al Busyroni-school.edu',
-                'academic' => 'academic@MTs PPTA Abdullah Al Busyroni-school.edu',
-                'admin' => 'admin@MTs PPTA Abdullah Al Busyroni-school.edu'
+                'technical' => 'support@ PPTA Abdullah Al Busyroni-school.edu',
+                'academic' => 'academic@ PPTA Abdullah Al Busyroni-school.edu',
+                'admin' => 'admin@ PPTA Abdullah Al Busyroni-school.edu'
             ],
             'hours' => [
                 'weekdays' => '07:00 - 16:00 WIB',

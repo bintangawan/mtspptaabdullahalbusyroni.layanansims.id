@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Generation Time: Dec 27, 2025 at 05:29 AM
+-- Generation Time: Jan 30, 2026 at 10:16 AM
 -- Server version: 8.0.30
--- PHP Version: 8.2.26
+-- PHP Version: 8.3.30
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -40,14 +40,6 @@ CREATE TABLE `announcements` (
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
---
--- Dumping data for table `announcements`
---
-
-INSERT INTO `announcements` (`id`, `title`, `content`, `scope_type`, `scope_id`, `role_name`, `published_at`, `created_by`, `created_at`, `updated_at`) VALUES
-(10, 'Belajar HTML yaa anak-anak Bapak', 'Belajar HTML Semuanya!!', 'section', 94, NULL, '2025-12-26 20:23:31', 115, '2025-12-26 20:23:31', '2025-12-26 20:23:31'),
-(12, 'Bayar SPP', 'Anak-Anak sudah bisa diingatkan yaa orang tuanya untuk membayar SPP!', 'global', NULL, NULL, '2025-12-26 22:22:30', 1, '2025-12-26 22:22:30', '2025-12-26 22:22:30');
-
 -- --------------------------------------------------------
 
 --
@@ -67,13 +59,6 @@ CREATE TABLE `assignments` (
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
---
--- Dumping data for table `assignments`
---
-
-INSERT INTO `assignments` (`id`, `section_id`, `judul`, `deskripsi`, `tipe`, `deadline`, `rubrik_json`, `published_at`, `created_at`, `updated_at`) VALUES
-(5, 94, 'Buat Web Sederhana dan Hosting di Netlify', 'Buat Web Sederhana dan Hosting di Netlify', 'link', '2025-12-30 10:29:00', '[{\"bobot\": 70, \"kriteria\": \"Hosting\", \"deskripsi\": \"Hosting Appsnya\"}, {\"bobot\": 30, \"kriteria\": \"Semantic HTML\", \"deskripsi\": \"Semantic HTML\"}]', '2025-12-26 20:35:29', '2025-12-26 20:30:35', '2025-12-26 20:35:29');
-
 -- --------------------------------------------------------
 
 --
@@ -88,13 +73,6 @@ CREATE TABLE `attendances` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Dumping data for table `attendances`
---
-
-INSERT INTO `attendances` (`id`, `section_id`, `pertemuan_ke`, `tanggal`, `created_at`, `updated_at`) VALUES
-(5, 94, 1, '2025-12-27', '2025-12-26 20:43:33', '2025-12-26 20:43:33');
 
 -- --------------------------------------------------------
 
@@ -111,14 +89,6 @@ CREATE TABLE `attendance_details` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Dumping data for table `attendance_details`
---
-
-INSERT INTO `attendance_details` (`id`, `attendance_id`, `user_id`, `status`, `note`, `created_at`, `updated_at`) VALUES
-(18, 5, 117, 'hadir', NULL, '2025-12-26 20:43:33', '2025-12-26 20:43:33'),
-(19, 5, 118, 'hadir', NULL, '2025-12-26 20:43:33', '2025-12-26 20:43:33');
 
 -- --------------------------------------------------------
 
@@ -137,10 +107,7 @@ CREATE TABLE `cache` (
 --
 
 INSERT INTO `cache` (`key`, `value`, `expiration`) VALUES
-('mts_ppta_abdulllah_al_busyroni_cache_mtsppta@gmail.com|127.0.0.1', 'i:2;', 1766811813),
-('mts_ppta_abdulllah_al_busyroni_cache_mtsppta@gmail.com|127.0.0.1:timer', 'i:1766811813;', 1766811813),
-('mts_ppta_abdulllah_al_busyroni_cache_spatie.permission.cache', 'a:3:{s:5:\"alias\";a:4:{s:1:\"a\";s:2:\"id\";s:1:\"b\";s:4:\"name\";s:1:\"c\";s:10:\"guard_name\";s:1:\"r\";s:5:\"roles\";}s:11:\"permissions\";a:36:{i:0;a:4:{s:1:\"a\";i:1;s:1:\"b\";s:14:\"view-dashboard\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:3:{i:0;i:1;i:1;i:2;i:2;i:3;}}i:1;a:4:{s:1:\"a\";i:2;s:1:\"b\";s:18:\"manage-master-data\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:2;a:4:{s:1:\"a\";i:3;s:1:\"b\";s:12:\"manage-terms\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:3;a:4:{s:1:\"a\";i:4;s:1:\"b\";s:15:\"manage-subjects\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:4;a:4:{s:1:\"a\";i:5;s:1:\"b\";s:12:\"manage-users\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:5;a:4:{s:1:\"a\";i:6;s:1:\"b\";s:12:\"assign-roles\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:6;a:4:{s:1:\"a\";i:7;s:1:\"b\";s:12:\"import-users\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:7;a:4:{s:1:\"a\";i:8;s:1:\"b\";s:13:\"view-sections\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:3:{i:0;i:1;i:1;i:2;i:2;i:3;}}i:8;a:4:{s:1:\"a\";i:9;s:1:\"b\";s:15:\"manage-sections\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:9;a:4:{s:1:\"a\";i:10;s:1:\"b\";s:21:\"view-section-students\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:3:{i:0;i:1;i:1;i:2;i:2;i:3;}}i:10;a:4:{s:1:\"a\";i:11;s:1:\"b\";s:23:\"manage-section-students\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:11;a:4:{s:1:\"a\";i:12;s:1:\"b\";s:14:\"view-materials\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:3:{i:0;i:1;i:1;i:2;i:2;i:3;}}i:12;a:4:{s:1:\"a\";i:13;s:1:\"b\";s:16:\"create-materials\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:13;a:4:{s:1:\"a\";i:14;s:1:\"b\";s:14:\"edit-materials\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:14;a:4:{s:1:\"a\";i:15;s:1:\"b\";s:16:\"delete-materials\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:15;a:4:{s:1:\"a\";i:16;s:1:\"b\";s:16:\"view-assignments\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:3:{i:0;i:1;i:1;i:2;i:2;i:3;}}i:16;a:4:{s:1:\"a\";i:17;s:1:\"b\";s:18:\"create-assignments\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:17;a:4:{s:1:\"a\";i:18;s:1:\"b\";s:16:\"edit-assignments\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:18;a:4:{s:1:\"a\";i:19;s:1:\"b\";s:18:\"delete-assignments\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:19;a:4:{s:1:\"a\";i:20;s:1:\"b\";s:18:\"submit-assignments\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:3;}}i:20;a:4:{s:1:\"a\";i:21;s:1:\"b\";s:11:\"view-grades\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:21;a:4:{s:1:\"a\";i:22;s:1:\"b\";s:13:\"manage-grades\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:22;a:4:{s:1:\"a\";i:23;s:1:\"b\";s:15:\"view-own-grades\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:3;}}i:23;a:4:{s:1:\"a\";i:24;s:1:\"b\";s:15:\"view-attendance\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:24;a:4:{s:1:\"a\";i:25;s:1:\"b\";s:17:\"manage-attendance\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:25;a:4:{s:1:\"a\";i:26;s:1:\"b\";s:19:\"view-own-attendance\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:3;}}i:26;a:4:{s:1:\"a\";i:27;s:1:\"b\";s:18:\"view-announcements\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:3:{i:0;i:1;i:1;i:2;i:2;i:3;}}i:27;a:4:{s:1:\"a\";i:28;s:1:\"b\";s:20:\"create-announcements\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:28;a:4:{s:1:\"a\";i:29;s:1:\"b\";s:18:\"edit-announcements\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:29;a:4:{s:1:\"a\";i:30;s:1:\"b\";s:20:\"delete-announcements\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:30;a:4:{s:1:\"a\";i:31;s:1:\"b\";s:12:\"view-reports\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:31;a:4:{s:1:\"a\";i:32;s:1:\"b\";s:14:\"export-reports\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:32;a:4:{s:1:\"a\";i:33;s:1:\"b\";s:11:\"use-chatbot\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:3:{i:0;i:1;i:1;i:2;i:2;i:3;}}i:33;a:4:{s:1:\"a\";i:34;s:1:\"b\";s:21:\"manage-chatbot-config\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:34;a:4:{s:1:\"a\";i:35;s:1:\"b\";s:13:\"view-schedule\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:3:{i:0;i:1;i:1;i:2;i:2;i:3;}}i:35;a:4:{s:1:\"a\";i:36;s:1:\"b\";s:15:\"manage-schedule\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}}s:5:\"roles\";a:3:{i:0;a:3:{s:1:\"a\";i:1;s:1:\"b\";s:5:\"admin\";s:1:\"c\";s:3:\"web\";}i:1;a:3:{s:1:\"a\";i:2;s:1:\"b\";s:4:\"guru\";s:1:\"c\";s:3:\"web\";}i:2;a:3:{s:1:\"a\";i:3;s:1:\"b\";s:5:\"siswa\";s:1:\"c\";s:3:\"web\";}}}', 1766894734),
-('sims_cache_spatie.permission.cache', 'a:3:{s:5:\"alias\";a:4:{s:1:\"a\";s:2:\"id\";s:1:\"b\";s:4:\"name\";s:1:\"c\";s:10:\"guard_name\";s:1:\"r\";s:5:\"roles\";}s:11:\"permissions\";a:36:{i:0;a:4:{s:1:\"a\";i:1;s:1:\"b\";s:14:\"view-dashboard\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:3:{i:0;i:1;i:1;i:2;i:2;i:3;}}i:1;a:4:{s:1:\"a\";i:2;s:1:\"b\";s:18:\"manage-master-data\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:2;a:4:{s:1:\"a\";i:3;s:1:\"b\";s:12:\"manage-terms\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:3;a:4:{s:1:\"a\";i:4;s:1:\"b\";s:15:\"manage-subjects\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:4;a:4:{s:1:\"a\";i:5;s:1:\"b\";s:12:\"manage-users\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:5;a:4:{s:1:\"a\";i:6;s:1:\"b\";s:12:\"assign-roles\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:6;a:4:{s:1:\"a\";i:7;s:1:\"b\";s:12:\"import-users\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:7;a:4:{s:1:\"a\";i:8;s:1:\"b\";s:13:\"view-sections\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:3:{i:0;i:1;i:1;i:2;i:2;i:3;}}i:8;a:4:{s:1:\"a\";i:9;s:1:\"b\";s:15:\"manage-sections\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:9;a:4:{s:1:\"a\";i:10;s:1:\"b\";s:21:\"view-section-students\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:3:{i:0;i:1;i:1;i:2;i:2;i:3;}}i:10;a:4:{s:1:\"a\";i:11;s:1:\"b\";s:23:\"manage-section-students\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:11;a:4:{s:1:\"a\";i:12;s:1:\"b\";s:14:\"view-materials\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:3:{i:0;i:1;i:1;i:2;i:2;i:3;}}i:12;a:4:{s:1:\"a\";i:13;s:1:\"b\";s:16:\"create-materials\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:13;a:4:{s:1:\"a\";i:14;s:1:\"b\";s:14:\"edit-materials\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:14;a:4:{s:1:\"a\";i:15;s:1:\"b\";s:16:\"delete-materials\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:15;a:4:{s:1:\"a\";i:16;s:1:\"b\";s:16:\"view-assignments\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:3:{i:0;i:1;i:1;i:2;i:2;i:3;}}i:16;a:4:{s:1:\"a\";i:17;s:1:\"b\";s:18:\"create-assignments\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:17;a:4:{s:1:\"a\";i:18;s:1:\"b\";s:16:\"edit-assignments\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:18;a:4:{s:1:\"a\";i:19;s:1:\"b\";s:18:\"delete-assignments\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:19;a:4:{s:1:\"a\";i:20;s:1:\"b\";s:18:\"submit-assignments\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:3;}}i:20;a:4:{s:1:\"a\";i:21;s:1:\"b\";s:11:\"view-grades\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:21;a:4:{s:1:\"a\";i:22;s:1:\"b\";s:13:\"manage-grades\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:22;a:4:{s:1:\"a\";i:23;s:1:\"b\";s:15:\"view-own-grades\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:3;}}i:23;a:4:{s:1:\"a\";i:24;s:1:\"b\";s:15:\"view-attendance\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:24;a:4:{s:1:\"a\";i:25;s:1:\"b\";s:17:\"manage-attendance\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:25;a:4:{s:1:\"a\";i:26;s:1:\"b\";s:19:\"view-own-attendance\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:3;}}i:26;a:4:{s:1:\"a\";i:27;s:1:\"b\";s:18:\"view-announcements\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:3:{i:0;i:1;i:1;i:2;i:2;i:3;}}i:27;a:4:{s:1:\"a\";i:28;s:1:\"b\";s:20:\"create-announcements\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:28;a:4:{s:1:\"a\";i:29;s:1:\"b\";s:18:\"edit-announcements\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:29;a:4:{s:1:\"a\";i:30;s:1:\"b\";s:20:\"delete-announcements\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:30;a:4:{s:1:\"a\";i:31;s:1:\"b\";s:12:\"view-reports\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:31;a:4:{s:1:\"a\";i:32;s:1:\"b\";s:14:\"export-reports\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:32;a:4:{s:1:\"a\";i:33;s:1:\"b\";s:11:\"use-chatbot\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:3:{i:0;i:1;i:1;i:2;i:2;i:3;}}i:33;a:4:{s:1:\"a\";i:34;s:1:\"b\";s:21:\"manage-chatbot-config\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:34;a:4:{s:1:\"a\";i:35;s:1:\"b\";s:13:\"view-schedule\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:3:{i:0;i:1;i:1;i:2;i:2;i:3;}}i:35;a:4:{s:1:\"a\";i:36;s:1:\"b\";s:15:\"manage-schedule\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}}s:5:\"roles\";a:3:{i:0;a:3:{s:1:\"a\";i:1;s:1:\"b\";s:5:\"admin\";s:1:\"c\";s:3:\"web\";}i:1;a:3:{s:1:\"a\";i:2;s:1:\"b\";s:4:\"guru\";s:1:\"c\";s:3:\"web\";}i:2;a:3:{s:1:\"a\";i:3;s:1:\"b\";s:5:\"siswa\";s:1:\"c\";s:3:\"web\";}}}', 1766891764);
+('mts_ppta_abdullah_al_busyroni_cache_spatie.permission.cache', 'a:3:{s:5:\"alias\";a:4:{s:1:\"a\";s:2:\"id\";s:1:\"b\";s:4:\"name\";s:1:\"c\";s:10:\"guard_name\";s:1:\"r\";s:5:\"roles\";}s:11:\"permissions\";a:36:{i:0;a:4:{s:1:\"a\";i:1;s:1:\"b\";s:14:\"view-dashboard\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:3:{i:0;i:1;i:1;i:2;i:2;i:3;}}i:1;a:4:{s:1:\"a\";i:2;s:1:\"b\";s:18:\"manage-master-data\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:2;a:4:{s:1:\"a\";i:3;s:1:\"b\";s:12:\"manage-terms\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:3;a:4:{s:1:\"a\";i:4;s:1:\"b\";s:15:\"manage-subjects\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:4;a:4:{s:1:\"a\";i:5;s:1:\"b\";s:12:\"manage-users\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:5;a:4:{s:1:\"a\";i:6;s:1:\"b\";s:12:\"assign-roles\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:6;a:4:{s:1:\"a\";i:7;s:1:\"b\";s:12:\"import-users\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:7;a:4:{s:1:\"a\";i:8;s:1:\"b\";s:13:\"view-sections\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:3:{i:0;i:1;i:1;i:2;i:2;i:3;}}i:8;a:4:{s:1:\"a\";i:9;s:1:\"b\";s:15:\"manage-sections\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:9;a:4:{s:1:\"a\";i:10;s:1:\"b\";s:21:\"view-section-students\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:3:{i:0;i:1;i:1;i:2;i:2;i:3;}}i:10;a:4:{s:1:\"a\";i:11;s:1:\"b\";s:23:\"manage-section-students\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:11;a:4:{s:1:\"a\";i:12;s:1:\"b\";s:14:\"view-materials\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:3:{i:0;i:1;i:1;i:2;i:2;i:3;}}i:12;a:4:{s:1:\"a\";i:13;s:1:\"b\";s:16:\"create-materials\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:13;a:4:{s:1:\"a\";i:14;s:1:\"b\";s:14:\"edit-materials\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:14;a:4:{s:1:\"a\";i:15;s:1:\"b\";s:16:\"delete-materials\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:15;a:4:{s:1:\"a\";i:16;s:1:\"b\";s:16:\"view-assignments\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:3:{i:0;i:1;i:1;i:2;i:2;i:3;}}i:16;a:4:{s:1:\"a\";i:17;s:1:\"b\";s:18:\"create-assignments\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:17;a:4:{s:1:\"a\";i:18;s:1:\"b\";s:16:\"edit-assignments\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:18;a:4:{s:1:\"a\";i:19;s:1:\"b\";s:18:\"delete-assignments\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:19;a:4:{s:1:\"a\";i:20;s:1:\"b\";s:18:\"submit-assignments\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:3;}}i:20;a:4:{s:1:\"a\";i:21;s:1:\"b\";s:11:\"view-grades\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:21;a:4:{s:1:\"a\";i:22;s:1:\"b\";s:13:\"manage-grades\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:22;a:4:{s:1:\"a\";i:23;s:1:\"b\";s:15:\"view-own-grades\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:3;}}i:23;a:4:{s:1:\"a\";i:24;s:1:\"b\";s:15:\"view-attendance\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:24;a:4:{s:1:\"a\";i:25;s:1:\"b\";s:17:\"manage-attendance\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:25;a:4:{s:1:\"a\";i:26;s:1:\"b\";s:19:\"view-own-attendance\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:3;}}i:26;a:4:{s:1:\"a\";i:27;s:1:\"b\";s:18:\"view-announcements\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:3:{i:0;i:1;i:1;i:2;i:2;i:3;}}i:27;a:4:{s:1:\"a\";i:28;s:1:\"b\";s:20:\"create-announcements\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:28;a:4:{s:1:\"a\";i:29;s:1:\"b\";s:18:\"edit-announcements\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:29;a:4:{s:1:\"a\";i:30;s:1:\"b\";s:20:\"delete-announcements\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:30;a:4:{s:1:\"a\";i:31;s:1:\"b\";s:12:\"view-reports\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:31;a:4:{s:1:\"a\";i:32;s:1:\"b\";s:14:\"export-reports\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:32;a:4:{s:1:\"a\";i:33;s:1:\"b\";s:11:\"use-chatbot\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:3:{i:0;i:1;i:1;i:2;i:2;i:3;}}i:33;a:4:{s:1:\"a\";i:34;s:1:\"b\";s:21:\"manage-chatbot-config\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:34;a:4:{s:1:\"a\";i:35;s:1:\"b\";s:13:\"view-schedule\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:3:{i:0;i:1;i:1;i:2;i:2;i:3;}}i:35;a:4:{s:1:\"a\";i:36;s:1:\"b\";s:15:\"manage-schedule\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}}s:5:\"roles\";a:3:{i:0;a:3:{s:1:\"a\";i:1;s:1:\"b\";s:5:\"admin\";s:1:\"c\";s:3:\"web\";}i:1;a:3:{s:1:\"a\";i:2;s:1:\"b\";s:4:\"guru\";s:1:\"c\";s:3:\"web\";}i:2;a:3:{s:1:\"a\";i:3;s:1:\"b\";s:5:\"siswa\";s:1:\"c\";s:3:\"web\";}}}', 1769854317);
 
 -- --------------------------------------------------------
 
@@ -254,8 +221,7 @@ CREATE TABLE `guru_profiles` (
 --
 
 INSERT INTO `guru_profiles` (`id`, `user_id`, `nidn`, `nuptk`, `mapel_keahlian`, `telepon`, `created_at`, `updated_at`) VALUES
-(18, 115, '111000111', '-', 'Matematika', '087841185404', '2025-12-26 19:20:16', '2025-12-26 19:20:16'),
-(19, 119, '123456789', '987654321', 'Matematika', '08123456789', '2025-12-26 19:33:36', '2025-12-26 19:33:36');
+(26, 132, '0001', '0001', 'Matematika', '0001', '2026-01-30 03:15:52', '2026-01-30 03:15:52');
 
 -- --------------------------------------------------------
 
@@ -308,13 +274,6 @@ CREATE TABLE `materials` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Dumping data for table `materials`
---
-
-INSERT INTO `materials` (`id`, `section_id`, `judul`, `deskripsi`, `file_path`, `link_url`, `created_at`, `updated_at`) VALUES
-(4, 94, 'HTML Dasar', 'Belajar HTML Dasar', NULL, 'https://youtu.be/dl01mdnCx2w?si=Dm5qFdtMX-L5_r5a', '2025-12-26 20:18:04', '2025-12-26 20:18:04');
 
 -- --------------------------------------------------------
 
@@ -385,12 +344,9 @@ CREATE TABLE `model_has_roles` (
 
 INSERT INTO `model_has_roles` (`role_id`, `model_type`, `model_id`) VALUES
 (1, 'App\\Models\\User', 1),
-(2, 'App\\Models\\User', 115),
-(3, 'App\\Models\\User', 117),
-(3, 'App\\Models\\User', 118),
-(2, 'App\\Models\\User', 119),
 (1, 'App\\Models\\User', 120),
-(3, 'App\\Models\\User', 123);
+(3, 'App\\Models\\User', 131),
+(2, 'App\\Models\\User', 132);
 
 -- --------------------------------------------------------
 
@@ -476,6 +432,34 @@ INSERT INTO `permissions` (`id`, `name`, `guard_name`, `created_at`, `updated_at
 (34, 'manage-chatbot-config', 'web', '2025-09-10 19:23:58', '2025-09-10 19:23:58'),
 (35, 'view-schedule', 'web', '2025-09-10 19:23:58', '2025-09-10 19:23:58'),
 (36, 'manage-schedule', 'web', '2025-09-10 19:23:58', '2025-09-10 19:23:58');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `posts`
+--
+
+CREATE TABLE `posts` (
+  `id` bigint UNSIGNED NOT NULL,
+  `title` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `slug` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `content` longtext COLLATE utf8mb4_unicode_ci NOT NULL,
+  `tags` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `image` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `is_published` tinyint(1) NOT NULL DEFAULT '1',
+  `author_id` bigint UNSIGNED NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `posts`
+--
+
+INSERT INTO `posts` (`id`, `title`, `slug`, `content`, `tags`, `image`, `is_published`, `author_id`, `created_at`, `updated_at`) VALUES
+(1, 'HARI SANTRI NASIONAL 2025', 'hari-santri-nasional-2025-C6gO8', '<p class=\"ql-align-center\">[HARI&nbsp;SANTRI&nbsp;NASIONAL&nbsp;2025]</p><p class=\"ql-align-center\"></p><p class=\"ql-align-center\">“Mengawal&nbsp;Indonesia&nbsp;Merdeka&nbsp;Menuju&nbsp;Peradaban&nbsp;Dunia”</p><p class=\"ql-align-center\"></p><p class=\"ql-align-center\">Selamat&nbsp;Hari&nbsp;Santri&nbsp;2025!</p><p class=\"ql-align-center\">Santri&nbsp;bukan&nbsp;hanya&nbsp;penjaga&nbsp;nilai-nilai&nbsp;agama,&nbsp;tapi&nbsp;juga&nbsp;garda&nbsp;terdepan&nbsp;dalam&nbsp;membangun&nbsp;bangsa&nbsp;dan&nbsp;peradaban&nbsp;dunia</p><p class=\"ql-align-center\"></p><p class=\"ql-align-center\">Semoga&nbsp;semangat&nbsp;juang,&nbsp;keikhlasan,&nbsp;dan&nbsp;keteguhan&nbsp;para&nbsp;santri&nbsp;terus&nbsp;menjadi&nbsp;inspirasi&nbsp;untuk&nbsp;Indonesia&nbsp;yang&nbsp;lebih&nbsp;beradab&nbsp;dan&nbsp;bermartabat</p><p class=\"ql-align-center\"></p><p class=\"ql-align-center\">Info&nbsp;terkait&nbsp;PPDB&nbsp;PPTA&nbsp;Abdullah&nbsp;Al&nbsp;Busyroni&nbsp;|&nbsp;WhatsApp&nbsp;:&nbsp;085275279289</p><p class=\"ql-align-center\"></p><p class=\"ql-align-center\">—</p><p class=\"ql-align-center\">Jl.&nbsp;Bedagai&nbsp;Dusun&nbsp;VIII,&nbsp;Kec.&nbsp;Sei&nbsp;Rampah,&nbsp;Kab.&nbsp;Serdang&nbsp;Bedagai,&nbsp;Prov.&nbsp;Sumatera&nbsp;Utara.</p><p class=\"ql-align-center\"></p><p class=\"ql-align-center\">Instagram&nbsp;:&nbsp;ponpes.abdullahalbusyroni</p><p class=\"ql-align-center\">Facebook&nbsp;:&nbsp;ponpes.abdullahalbusyroni</p><p class=\"ql-align-center\">Tiktok&nbsp;:&nbsp;ponpesabdullahalbusyroni</p><p class=\"ql-align-center\">Youtube&nbsp;:&nbsp;PPTA&nbsp;Abdullah&nbsp;Al&nbsp;Busyroni</p><p class=\"ql-align-center\"></p><p class=\"ql-align-center\"></p>', '#PPDB2026, #PPTAAbdullahAlBusyroni, #SantriBerilmu, #SantriBerakhlak, #PesantrenDigital, #PesantrenSehat, #PesantrenRamahAnak, #sekolahpencetakhafizh', 'posts/YmS4DoGIqF1rspjwS8fzgg0a3QoFoV60o7VWDL5x.jpg', 1, 1, '2026-01-29 06:36:48', '2026-01-29 08:25:38'),
+(2, 'PPTA Abdullah Al Busyroni : Prestasi PPTA Abdullah Al Busyroni dalam Kejuaraan Open Competition', 'ppta-abdullah-al-busyroni-prestasi-ppta-abdullah-al-busyroni-dalam-kejuaraan-open-competition-m2gna', '<p><span style=\"background-color: rgb(255, 255, 255); color: rgb(0, 0, 0);\">Barakallah&nbsp;kami&nbsp;ucapkan&nbsp;selamat&nbsp;kepada&nbsp;perwakilan&nbsp;PPTA&nbsp;Abdullah&nbsp;Al&nbsp;Busyroni&nbsp;dalam&nbsp;Kejuaraan&nbsp;Pencak&nbsp;Silat&nbsp;Riau&nbsp;Open&nbsp;Competition&nbsp;untuk&nbsp;memperebutkan&nbsp;Piala&nbsp;Kadispora&nbsp;Riau&nbsp;yang&nbsp;di&nbsp;selenggarakan&nbsp;pada&nbsp;tanggal&nbsp;25-27&nbsp;Januari&nbsp;2025.✨</span></p><p></p><p class=\"ql-align-justify\"><span style=\"color: rgb(0, 0, 0); background-color: white;\">Harapannya&nbsp;semoga&nbsp;ananda&nbsp;dapat&nbsp;terus&nbsp;meningkatkan&nbsp;prestasi&nbsp;untuk&nbsp;kedepannya,&nbsp;dapat&nbsp;membanggakan&nbsp;orang&nbsp;tua,&nbsp;sekolah&nbsp;dan&nbsp;masyarakat.</span></p><p class=\"ql-align-justify\"></p><p class=\"ql-align-justify\"><span style=\"color: rgb(0, 0, 0); background-color: white;\">Semoga&nbsp;ini&nbsp;juga&nbsp;dapat&nbsp;memotivasi&nbsp;seluruh&nbsp;siswa-siswi&nbsp;untuk&nbsp;dapat&nbsp;berprestasi&nbsp;di&nbsp;sekolah&nbsp;maupun&nbsp;di&nbsp;luar&nbsp;sekolah.&nbsp;Aamiinn.</span></p><p class=\"ql-align-justify\"></p><p class=\"ql-align-justify\"><span style=\"color: rgb(0, 0, 0); background-color: white;\">Terima&nbsp;kasih,</span></p><p class=\"ql-align-justify\"><span style=\"color: rgb(0, 0, 0); background-color: white;\">PPTA&nbsp;Abdullah&nbsp;Al&nbsp;Busyroni</span></p><p class=\"ql-align-justify\"></p><p class=\"ql-align-justify\"><span style=\"color: rgb(0, 0, 0); background-color: white;\">—</span></p><p class=\"ql-align-justify\"><span style=\"color: rgb(0, 0, 0); background-color: white;\">Jl.&nbsp;Bedagai&nbsp;Dusun&nbsp;VIII,&nbsp;Kec.&nbsp;Sei&nbsp;Rampah,&nbsp;Kab.&nbsp;Serdang&nbsp;Bedagai,&nbsp;Prov.&nbsp;Sumatera&nbsp;Utara.</span></p><p class=\"ql-align-justify\"></p><p class=\"ql-align-justify\"><span style=\"color: rgb(0, 0, 0); background-color: white;\">Instagram&nbsp;:&nbsp;ponpes.abdullahalbusyroni</span></p><p class=\"ql-align-justify\"><span style=\"color: rgb(0, 0, 0); background-color: white;\">Facebook&nbsp;:&nbsp;ponpes.abdullahalbusyroni</span></p><p class=\"ql-align-justify\"><span style=\"color: rgb(0, 0, 0); background-color: white;\">Tiktok&nbsp;:&nbsp;ponpesabdullahalbusyroni</span></p><p class=\"ql-align-justify\"><span style=\"color: rgb(0, 0, 0); background-color: white;\">Youtube&nbsp;:&nbsp;PPTA&nbsp;Abdullah&nbsp;Al&nbsp;Busyroni</span></p><p class=\"ql-align-justify\"><span style=\"background-color: white; color: rgb(0, 0, 0);\">&nbsp;&nbsp;&nbsp;</span></p><p><span style=\"color: rgb(0, 0, 0); background-color: white;\">Info&nbsp;terkait&nbsp;PPDB&nbsp;PPTA&nbsp;Abdullah&nbsp;Al&nbsp;Busyroni:</span></p><p class=\"ql-align-justify\"><span style=\"color: rgb(0, 0, 0); background-color: white;\">Muallimah&nbsp;Vitania&nbsp;Barantika&nbsp;Delly&nbsp;Yanti,&nbsp;S.Pd:&nbsp;085275279289</span></p><p></p>', '#pesantrensehat, #ponpessehat, #ponpesabdullahalbusyroni,  #pondokpesantren,  #yuksekolahdiabdullahalbusyroni,  #sekolahpencetakhafizh', 'posts/9kRUpoG34MktKNGzUpMyiDx5S9JROqJMPprE4ZSn.jpg', 1, 1, '2026-01-29 08:29:33', '2026-01-29 08:29:33'),
+(3, 'Audiensi dan Sinergitas Program Pendidikan Bersama MAN 2 Model Medan', 'audiensi-dan-sinergitas-program-pendidikan-bersama-man-2-model-medan-xDY2Y', '<p class=\"ql-align-center\"><span style=\"background-color: rgb(255, 255, 255); color: rgb(0, 0, 0);\">[Dokumentasi&nbsp;Audiensi&nbsp;dan&nbsp;Sinergitas&nbsp;Program&nbsp;Pendidikan&nbsp;Bersama&nbsp;MAN&nbsp;2&nbsp;Model&nbsp;Medan]</span></p><p class=\"ql-align-center\"></p><p class=\"ql-align-center\"><span style=\"background-color: rgb(255, 255, 255); color: rgb(0, 0, 0);\">Alhamdulillah,&nbsp;PPTA&nbsp;Abdullah&nbsp;Al&nbsp;Busyroni&nbsp;berkesempatan&nbsp;menjalin&nbsp;silaturahmi&nbsp;dan&nbsp;berbagi&nbsp;gagasan&nbsp;bersama&nbsp;MAN&nbsp;2&nbsp;Model&nbsp;Medan</span></p><p class=\"ql-align-center\"></p><p class=\"ql-align-center\"><span style=\"background-color: rgb(255, 255, 255); color: rgb(0, 0, 0);\">Kegiatan&nbsp;ini&nbsp;menjadi&nbsp;langkah&nbsp;nyata&nbsp;dalam&nbsp;memperkuat&nbsp;kolaborasi&nbsp;dan&nbsp;sinergi&nbsp;pendidikan&nbsp;antara&nbsp;pesantren&nbsp;dan&nbsp;sekolah&nbsp;formal&nbsp;demi&nbsp;mencetak&nbsp;generasi&nbsp;yang&nbsp;unggul&nbsp;dan&nbsp;berakhlak&nbsp;mulia</span></p><p class=\"ql-align-center\"></p><p class=\"ql-align-center\"><span style=\"background-color: rgb(255, 255, 255); color: rgb(0, 0, 0);\">Info&nbsp;terkait&nbsp;PPDB&nbsp;PPTA&nbsp;Abdullah&nbsp;Al&nbsp;Busyroni&nbsp;|&nbsp;WhatsApp&nbsp;:&nbsp;085275279289</span></p><p class=\"ql-align-center\"></p><p class=\"ql-align-center\"><span style=\"background-color: rgb(255, 255, 255); color: rgb(0, 0, 0);\">PESANTREN&nbsp;SEHAT&nbsp;PERTAMA&nbsp;|&nbsp;PESANTREN&nbsp;RAMAH&nbsp;ANAK&nbsp;|&nbsp;PESANTREN&nbsp;DIGITAL</span></p><p class=\"ql-align-center\"></p><p class=\"ql-align-center\"><span style=\"background-color: rgb(255, 255, 255); color: rgb(0, 0, 0);\">—</span></p><p class=\"ql-align-center\"><span style=\"background-color: rgb(255, 255, 255); color: rgb(0, 0, 0);\">Jl.&nbsp;Bedagai&nbsp;Dusun&nbsp;VIII,&nbsp;Kec.&nbsp;Sei&nbsp;Rampah,&nbsp;Kab.&nbsp;Serdang&nbsp;Bedagai,&nbsp;Prov.&nbsp;Sumatera&nbsp;Utara.</span></p><p class=\"ql-align-center\"></p><p class=\"ql-align-center\"><span style=\"background-color: rgb(255, 255, 255); color: rgb(0, 0, 0);\">Instagram&nbsp;:&nbsp;ponpes.abdullahalbusyroni</span></p><p class=\"ql-align-center\"><span style=\"background-color: rgb(255, 255, 255); color: rgb(0, 0, 0);\">Facebook&nbsp;:&nbsp;ponpes.abdullahalbusyroni</span></p><p class=\"ql-align-center\"><span style=\"background-color: rgb(255, 255, 255); color: rgb(0, 0, 0);\">Tiktok&nbsp;:&nbsp;ponpesabdullahalbusyroni</span></p><p class=\"ql-align-center\"><span style=\"background-color: rgb(255, 255, 255); color: rgb(0, 0, 0);\">Youtube&nbsp;:&nbsp;PPTA&nbsp;Abdullah&nbsp;Al&nbsp;Busyroni</span></p><p class=\"ql-align-center\"></p><p class=\"ql-align-center\"></p><p></p>', '#PPDB2026 #PPTAAbdullahAlBusyroni #SantriBerilmu #SantriBerakhlak #PesantrenDigital, #PesantrenSehat, #PesantrenRamahAnak, #sekolahpencetakhafizh', 'posts/H40YEdmXqwRutxDcOb4nN2s9ewq25evtVJqvkLJK.jpg', 1, 1, '2026-01-29 08:31:12', '2026-01-29 08:31:12');
 
 -- --------------------------------------------------------
 
@@ -604,14 +588,6 @@ CREATE TABLE `sections` (
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
---
--- Dumping data for table `sections`
---
-
-INSERT INTO `sections` (`id`, `subject_id`, `guru_id`, `term_id`, `kapasitas`, `jadwal_json`, `created_at`, `updated_at`) VALUES
-(93, 99, 119, 1, 30, '[]', '2025-12-26 20:09:59', '2025-12-26 20:09:59'),
-(94, 97, 115, 1, 30, '[]', '2025-12-26 20:10:51', '2025-12-26 20:10:51');
-
 -- --------------------------------------------------------
 
 --
@@ -625,14 +601,6 @@ CREATE TABLE `section_students` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Dumping data for table `section_students`
---
-
-INSERT INTO `section_students` (`id`, `section_id`, `user_id`, `created_at`, `updated_at`) VALUES
-(901, 94, 118, '2025-12-26 20:16:31', '2025-12-26 20:16:31'),
-(902, 94, 117, '2025-12-26 20:16:37', '2025-12-26 20:16:37');
 
 -- --------------------------------------------------------
 
@@ -654,12 +622,7 @@ CREATE TABLE `sessions` (
 --
 
 INSERT INTO `sessions` (`id`, `user_id`, `ip_address`, `user_agent`, `payload`, `last_activity`) VALUES
-('6npqJPaebxMY7XzUADwVQdZ4F1FWdxxQh1j45wpR', NULL, '127.0.0.1', 'Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/603.1.30 (KHTML, like Gecko) Version/17.5 Mobile/15A5370a Safari/602.1', 'YTozOntzOjY6Il90b2tlbiI7czo0MDoiOHhXZG5rWjZTQjhJNTdXOXc1MWp4bGpEWm1TVkc5WVdnaHB4b0FDeSI7czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6Mjc6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMC9sb2dpbiI7fXM6NjoiX2ZsYXNoIjthOjI6e3M6Mzoib2xkIjthOjA6e31zOjM6Im5ldyI7YTowOnt9fX0=', 1766811112),
-('evaImB65J8bNDKzfE7tp2UachusgHwJ9GO4Kmz5L', 115, '127.0.0.1', 'Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/603.1.30 (KHTML, like Gecko) Version/17.5 Mobile/15A5370a Safari/602.1', 'YTo1OntzOjY6Il90b2tlbiI7czo0MDoiUHpxQU45aVVXdDVJZ0dKNXdaTDB0NGhIWDZnb0E0Rml3dDZyVVVGWSI7czozOiJ1cmwiO2E6MTp7czo4OiJpbnRlbmRlZCI7czozMjoiaHR0cDovLzEyNy4wLjAuMTo4MDAwL2d1cnUva2VsYXMiO31zOjk6Il9wcmV2aW91cyI7YToxOntzOjM6InVybCI7czoyNzoiaHR0cDovLzEyNy4wLjAuMTo4MDAwL2xvZ2luIjt9czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319czo1MDoibG9naW5fd2ViXzU5YmEzNmFkZGMyYjJmOTQwMTU4MGYwMTRjN2Y1OGVhNGUzMDk4OWQiO2k6MTE1O30=', 1766806782),
-('H7iuQOjhc6rDVCVn3L7Avew5KbF0pN67kZ96AwYY', NULL, '127.0.0.1', 'Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/603.1.30 (KHTML, like Gecko) Version/17.5 Mobile/15A5370a Safari/602.1', 'YTo0OntzOjY6Il90b2tlbiI7czo0MDoibUZ5dnhRdGF4RXlqcXl1NEhNaXZIUGdSTXFKeXpKaXRpVGNhMWFDRSI7czozOiJ1cmwiO2E6MTp7czo4OiJpbnRlbmRlZCI7czozNjoiaHR0cDovLzEyNy4wLjAuMTo4MDAwL2d1cnUvZGFzaGJvYXJkIjt9czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6MzY6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMC9ndXJ1L2Rhc2hib2FyZCI7fXM6NjoiX2ZsYXNoIjthOjI6e3M6Mzoib2xkIjthOjA6e31zOjM6Im5ldyI7YTowOnt9fX0=', 1766810381),
-('pO3mGJLv3GxcsKA7KqzDFaEFAxCPQxSaEOvSr8VQ', NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0', 'YToyOntzOjY6Il90b2tlbiI7czo0MDoiYkJvb21aejZXMm5TYmx0b3dobE1mZ1piYjZkdzVuNlFBUnBWOHhEbSI7czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319fQ==', 1766812985),
-('teAZAprZr9rFwPc7o2wOdnYVXcTO7vycmk6LOq4q', 115, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0', 'YTo0OntzOjY6Il90b2tlbiI7czo0MDoiM2VHZElEelNVeWNId3pER3lMZXN2NlE2elZaZVRWR2hXS29oVnJIViI7czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6MzI6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMC9ndXJ1L2tlbGFzIjt9czo1MDoibG9naW5fd2ViXzU5YmEzNmFkZGMyYjJmOTQwMTU4MGYwMTRjN2Y1OGVhNGUzMDk4OWQiO2k6MTE1O30=', 1766807893),
-('TwG3d4JxiDRWVFIaphrdkO0IMeGc1PbbKqmfdrV0', NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0', 'YToyOntzOjY6Il90b2tlbiI7czo0MDoiS2FsWFJ2bU5sZjRLcHFSSzM2TlBBNTNNcVdLR1VaWTltaG5FVVc4bCI7czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319fQ==', 1766809167);
+('84buMqtISbyKXvbqQvJYmxZFtV7AEYvi6TQkHStW', NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36', 'YTozOntzOjY6Il90b2tlbiI7czo0MDoiZk1obE5FRVM5Vm9yWlB0UTRjOHRaQUVCSTBuczBpazdDaHE5ODd6MCI7czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6Mzg6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMC9hcGkvbGFuZGluZy1uZXdzIjt9fQ==', 1769768194);
 
 -- --------------------------------------------------------
 
@@ -683,9 +646,7 @@ CREATE TABLE `siswa_profiles` (
 --
 
 INSERT INTO `siswa_profiles` (`id`, `user_id`, `nis`, `angkatan`, `kelas`, `wali_kelas_id`, `created_at`, `updated_at`) VALUES
-(101, 117, 'SIS000117', 2022, 'XII - IPA 1', 115, '2025-12-26 19:31:11', '2025-12-26 19:31:11'),
-(102, 118, '20240101', 2024, 'X IPA 1', NULL, '2025-12-26 19:33:36', '2025-12-26 19:33:36'),
-(104, 123, 'SIS000123', 2021, 'XII-IPA', 115, '2025-12-26 22:04:31', '2025-12-26 22:04:31');
+(107, 131, '000', 2022, 'X - IPA 1', NULL, '2026-01-30 03:10:46', '2026-01-30 03:10:46');
 
 -- --------------------------------------------------------
 
@@ -707,9 +668,59 @@ CREATE TABLE `subjects` (
 --
 
 INSERT INTO `subjects` (`id`, `kode`, `nama`, `deskripsi`, `created_at`, `updated_at`) VALUES
-(97, 'MTK001', 'Matematika', 'Mata pelajaran matematika dasar', '2025-12-26 20:01:16', '2025-12-26 20:01:16'),
-(98, 'IPA001', 'IPA', 'Ilmu Pengetahuan Alam', '2025-12-26 20:01:16', '2025-12-26 20:01:16'),
-(99, 'MTK002', 'Matematika - IPA 2', NULL, '2025-12-26 20:09:45', '2025-12-26 20:09:45');
+(100, 'KODE', 'nama', 'deskripsi', '2026-01-29 05:55:51', '2026-01-29 05:55:51'),
+(101, 'IPA01', 'IPA VII-1', 'Imu Pengetahuan Alam', '2026-01-29 05:55:51', '2026-01-29 05:55:51'),
+(102, 'IPA02', 'IPA VIII-1', 'Ilmu Pengetahuan Alam', '2026-01-29 05:55:51', '2026-01-29 05:55:51'),
+(103, 'IPA03', 'IPA IX-1', 'Ilmu Pengetahuan Alam', '2026-01-29 05:55:51', '2026-01-29 05:55:51'),
+(104, 'MM01', 'MM VII-1', 'Matematika', '2026-01-29 05:55:51', '2026-01-29 05:55:51'),
+(105, 'MM02', 'MM VIII-1', 'Matematika', '2026-01-29 05:55:51', '2026-01-29 05:55:51'),
+(106, 'MM03', 'MM IX-1', 'Matematika', '2026-01-29 05:55:51', '2026-01-29 05:55:51'),
+(107, 'BA01', 'BA VII-1', 'Bahasa Arab', '2026-01-29 05:55:51', '2026-01-29 05:55:51'),
+(108, 'BA02', 'BA VIII-1', 'Bahasa Arab', '2026-01-29 05:55:51', '2026-01-29 05:55:51'),
+(109, 'BA03', 'BA IX-1', 'Bahasa Arab', '2026-01-29 05:55:51', '2026-01-29 05:55:51'),
+(110, 'IPS01', 'IPS VII-1', 'Ilmu Pengetahuan Sosial', '2026-01-29 05:55:51', '2026-01-29 05:55:51'),
+(111, 'IPS02', 'IPS VIII-1', 'ILmu Pengetahuan Sosial', '2026-01-29 05:55:51', '2026-01-29 05:55:51'),
+(112, 'IPS03', 'IPS IX-1', 'Ilmu Pengetahuan Sosial', '2026-01-29 05:55:51', '2026-01-29 05:55:51'),
+(113, 'BI01', 'BI VII-1', 'Bahasa Indonesia', '2026-01-29 05:55:51', '2026-01-29 05:55:51'),
+(114, 'BI02', 'BI VIII-1', 'Bahasa Indonesia', '2026-01-29 05:55:51', '2026-01-29 05:55:51'),
+(115, 'BI03', 'BI IX-1 ', 'Bahasa Indonesia', '2026-01-29 05:55:51', '2026-01-29 05:55:51'),
+(116, 'BING01', 'BING VII-1', 'Bahasa Inggris', '2026-01-29 05:55:51', '2026-01-29 05:55:51'),
+(117, 'BING02', 'BING VIII-1', 'Bahasa Inggris', '2026-01-29 05:55:51', '2026-01-29 05:55:51'),
+(118, 'BING03', 'BING IX-1', 'Bahasa Inggris', '2026-01-29 05:55:51', '2026-01-29 05:55:51'),
+(119, 'SKI01', 'SKI VII-1', 'Sejarah Kebudayaan Islam', '2026-01-29 05:55:51', '2026-01-29 05:55:51'),
+(120, 'SKI02', 'SKI VIII-1', 'Sejarah Kebudayaan Islam', '2026-01-29 05:55:51', '2026-01-29 05:55:51'),
+(121, 'SKI03', 'SKI IX-1', 'Sejarah Kebudayaan Islam', '2026-01-29 05:55:51', '2026-01-29 05:55:51'),
+(122, 'FQH01', 'FQH VII-1', 'Fiqih', '2026-01-29 05:55:51', '2026-01-29 05:55:51'),
+(123, 'FQH02', 'FQH VIII-1', 'Fiqih', '2026-01-29 05:55:51', '2026-01-29 05:55:51'),
+(124, 'FQH03', 'FQH IX-1', 'Fiqih', '2026-01-29 05:55:51', '2026-01-29 05:55:51'),
+(125, 'AA01', 'AA VII-1', 'Akidah Akhlak', '2026-01-29 05:55:51', '2026-01-29 05:55:51'),
+(126, 'AA02', 'AA VIII-1', 'Akidah Akhlak', '2026-01-29 05:55:51', '2026-01-29 05:55:51'),
+(127, 'AA03', 'AA IX-1', 'Akidah Akhlak', '2026-01-29 05:55:51', '2026-01-29 05:55:51'),
+(128, 'QH01', 'QH VII-1', 'Qur\'an Hadist', '2026-01-29 05:55:51', '2026-01-29 05:55:51'),
+(129, 'QH02', 'QH VIII-1', 'Qur\'an Hadist', '2026-01-29 05:55:51', '2026-01-29 05:55:51'),
+(130, 'QH03', 'QH IX-1', 'Qur\'an Hadist', '2026-01-29 05:55:51', '2026-01-29 05:55:51'),
+(131, 'SP01', 'SP VII-1', 'Seni dan Prakarya', '2026-01-29 05:55:51', '2026-01-29 05:55:51'),
+(132, 'SP02', 'SP VIII-1', 'Seni dan Prakarya', '2026-01-29 05:55:51', '2026-01-29 05:55:51'),
+(133, 'SP03', 'SP IX-1', 'Seni dan Prakarya', '2026-01-29 05:55:51', '2026-01-29 05:55:51'),
+(134, 'TIK01', 'TIK VII-1', 'Teknologi Informatika', '2026-01-29 05:55:51', '2026-01-29 05:55:51'),
+(135, 'TIK02', 'TIK VIII-1', 'Teknologi Informatika', '2026-01-29 05:55:51', '2026-01-29 05:55:51'),
+(136, 'TIK03', 'TIK IX-1', 'Teknologi Informatika', '2026-01-29 05:55:51', '2026-01-29 05:55:51'),
+(137, 'PJOK01', 'PJOK VII-1', 'Pendidikan Jasmani dan Olahraga', '2026-01-29 05:55:51', '2026-01-29 05:55:51'),
+(138, 'PJOK02', 'PJOK VIII-1', 'Pendidikan Jasmani dan Olahraga', '2026-01-29 05:55:51', '2026-01-29 05:55:51'),
+(139, 'PJOK03', 'PJOK IX-1', 'Pendidikan Jasmani dan Olahraga', '2026-01-29 05:55:51', '2026-01-29 05:55:51'),
+(140, 'AW01', 'AW VII-1', 'Ke Al Washliyahan', '2026-01-29 05:55:51', '2026-01-29 05:55:51'),
+(141, 'AW02', 'AW VIII-1', 'Ke Al Washliyahan', '2026-01-29 05:55:51', '2026-01-29 05:55:51'),
+(142, 'AW03', 'AW IX-1', 'Ke Al Washliyahan', '2026-01-29 05:55:51', '2026-01-29 05:55:51'),
+(143, 'KTB01', 'KTB VII-1', 'Kitab', '2026-01-29 05:55:51', '2026-01-29 05:55:51'),
+(144, 'KTB02', 'KTB VIII-1', 'Kitab', '2026-01-29 05:55:51', '2026-01-29 05:55:51'),
+(145, 'KTB03', 'KTB IX-1', 'Kitab', '2026-01-29 05:55:51', '2026-01-29 05:55:51'),
+(146, 'HDRH01', 'HDRH VII-1', 'Hadroh', '2026-01-29 05:55:51', '2026-01-29 05:55:51'),
+(147, 'HDRH02', 'HDRH VIII-1', 'Hadroh', '2026-01-29 05:55:51', '2026-01-29 05:55:51'),
+(148, 'HDRH03', 'HDRH IX-1', 'Hadroh', '2026-01-29 05:55:51', '2026-01-29 05:55:51'),
+(149, 'PKN01', 'PKN VII-1', 'Pendidikan Kewarganegaraan', '2026-01-29 05:55:51', '2026-01-29 05:55:51'),
+(150, 'PKN02', 'PKN VII-1', 'Pendidikan Kewarganegaraan', '2026-01-29 05:55:51', '2026-01-29 05:55:51'),
+(151, 'PKN03', 'PKN IX-1', 'Pendidikan Kewarganegaraan', '2026-01-29 05:55:51', '2026-01-29 05:55:51'),
+(152, 'BK', 'BK', 'Bimbingan Konseling', '2026-01-29 05:55:51', '2026-01-29 05:55:51');
 
 -- --------------------------------------------------------
 
@@ -730,13 +741,6 @@ CREATE TABLE `submissions` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Dumping data for table `submissions`
---
-
-INSERT INTO `submissions` (`id`, `assignment_id`, `user_id`, `konten_teks`, `file_path`, `link_url`, `submitted_at`, `score`, `feedback`, `created_at`, `updated_at`) VALUES
-(3, 5, 117, 'https://bintangin.com/', NULL, 'https://bintangin.com/', '2025-12-27 04:03:18', NULL, NULL, '2025-12-26 21:03:18', '2025-12-26 21:03:18');
 
 -- --------------------------------------------------------
 
@@ -783,12 +787,9 @@ CREATE TABLE `users` (
 
 INSERT INTO `users` (`id`, `name`, `email`, `email_verified_at`, `password`, `remember_token`, `created_at`, `updated_at`) VALUES
 (1, 'Administrator', 'admin@sims.com', '2025-09-10 19:23:59', '$2y$12$MHWciC2xq56ACHXLT5yTC.uub8KtHm.3Gwyk5xLfCzVPVLyPS5XTG', NULL, '2025-09-10 19:23:59', '2025-09-22 10:21:10'),
-(115, 'Budi Kurniawan', 'budi@gmail.com', '2025-12-26 19:20:16', '$2y$12$l4BRIbMLcB5SbxsEFAyWHexWG5rK2I/d14q5PRT9Xx.zGbQMybvqm', NULL, '2025-12-26 19:20:16', '2025-12-26 19:20:16'),
-(117, 'Budi Siswa', 'budisiswa@gmail.com', '2025-12-26 19:31:11', '$2y$12$yeufCj8EAWdK9gaArjzHwen0DL5NfRCgcj5ta43PzxMP/cOBQ8Lem', NULL, '2025-12-26 19:31:11', '2025-12-26 19:31:11'),
-(118, 'Ahmad Fauzi', 'ahmad@gmail.com', '2025-12-26 19:33:36', '$2y$12$oLmULAFTTT1GS5C6wqoe3eK5u7jqNDnSYZvfOaC/pF.3bRhUHne2y', NULL, '2025-12-26 19:33:36', '2025-12-26 19:33:36'),
-(119, 'Siti Aminah', 'siti@gmail.com', '2025-12-26 19:33:36', '$2y$12$VK/l1vKLB499N3rFUvjJX.9Hn/uRroUuWMkDxZ6sI6jHcc2Bd0R4u', NULL, '2025-12-26 19:33:36', '2025-12-26 19:33:36'),
 (120, 'Super Admin', 'mtsppta@admin.com', '2025-12-26 19:33:37', '$2y$12$5o8zA/C87dkDjJgXShcsMeX9/ZXluIy1UHftclwZjHH7zJBPTmYJG', NULL, '2025-12-26 19:33:37', '2025-12-26 19:33:37'),
-(123, 'ahmad zauzio', 'zauzio@gmail.com', '2025-12-26 22:04:31', '$2y$12$supZ.tpUDwu7K7zSdE2WEuOJUpzgyYVAD1.DIj8T903KE1PXYM66C', NULL, '2025-12-26 22:04:31', '2025-12-26 22:04:31');
+(131, 'Budi Siswa', 'budisiswa@gmail.com', '2026-01-30 03:10:46', '$2y$12$KjQheROtKRbbkcYms33F3e6E26Vk1e744VvoCeEuX1.CuoCRRdW.C', NULL, '2026-01-30 03:10:46', '2026-01-30 03:10:46'),
+(132, 'Budi', 'budi@gmail.com', '2026-01-30 03:15:52', '$2y$12$Dh/ScWGX5Nis/pFAQZVBruTw3JIrOUU.5cmM152PEMYW2erC/QOmC', NULL, '2026-01-30 03:15:52', '2026-01-30 03:15:52');
 
 --
 -- Indexes for dumped tables
@@ -943,6 +944,14 @@ ALTER TABLE `permissions`
   ADD UNIQUE KEY `permissions_name_guard_name_unique` (`name`,`guard_name`);
 
 --
+-- Indexes for table `posts`
+--
+ALTER TABLE `posts`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `posts_slug_unique` (`slug`),
+  ADD KEY `posts_author_id_foreign` (`author_id`);
+
+--
 -- Indexes for table `roles`
 --
 ALTER TABLE `roles`
@@ -1039,13 +1048,13 @@ ALTER TABLE `assignments`
 -- AUTO_INCREMENT for table `attendances`
 --
 ALTER TABLE `attendances`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `attendance_details`
 --
 ALTER TABLE `attendance_details`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
 
 --
 -- AUTO_INCREMENT for table `chat_configs`
@@ -1081,7 +1090,7 @@ ALTER TABLE `grades`
 -- AUTO_INCREMENT for table `guru_profiles`
 --
 ALTER TABLE `guru_profiles`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=27;
 
 --
 -- AUTO_INCREMENT for table `jobs`
@@ -1108,6 +1117,12 @@ ALTER TABLE `permissions`
   MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=37;
 
 --
+-- AUTO_INCREMENT for table `posts`
+--
+ALTER TABLE `posts`
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+
+--
 -- AUTO_INCREMENT for table `roles`
 --
 ALTER TABLE `roles`
@@ -1117,25 +1132,25 @@ ALTER TABLE `roles`
 -- AUTO_INCREMENT for table `sections`
 --
 ALTER TABLE `sections`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=96;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=107;
 
 --
 -- AUTO_INCREMENT for table `section_students`
 --
 ALTER TABLE `section_students`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=903;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=904;
 
 --
 -- AUTO_INCREMENT for table `siswa_profiles`
 --
 ALTER TABLE `siswa_profiles`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=105;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=108;
 
 --
 -- AUTO_INCREMENT for table `subjects`
 --
 ALTER TABLE `subjects`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=100;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=153;
 
 --
 -- AUTO_INCREMENT for table `submissions`
@@ -1153,7 +1168,7 @@ ALTER TABLE `terms`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=124;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=133;
 
 --
 -- Constraints for dumped tables
@@ -1226,6 +1241,12 @@ ALTER TABLE `model_has_permissions`
 --
 ALTER TABLE `model_has_roles`
   ADD CONSTRAINT `model_has_roles_role_id_foreign` FOREIGN KEY (`role_id`) REFERENCES `roles` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `posts`
+--
+ALTER TABLE `posts`
+  ADD CONSTRAINT `posts_author_id_foreign` FOREIGN KEY (`author_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
 
 --
 -- Constraints for table `role_has_permissions`

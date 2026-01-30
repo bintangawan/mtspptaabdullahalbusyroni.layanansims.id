@@ -112,7 +112,7 @@ function ConfirmDeleteDialog({
 }
 
 // ────────────────────────────────────────────────────────────────────────────────
-// Dialog Import (UPDATED: Button Left & Template)
+// Dialog Import
 type ImportUsersDialogProps = {
     open: boolean;
     onOpenChange: (open: boolean) => void;
@@ -223,7 +223,6 @@ function ImportUsersDialog({ open, onOpenChange, onDone }: ImportUsersDialogProp
                             Import Pengguna
                         </DialogTitle>
 
-                        {/* Tombol Download Template */}
                         <Button variant="secondary" size="sm" onClick={downloadTemplate} className="h-8 text-xs">
                             <FileDown className="mr-2 h-3 w-3" />
                             Download Template
@@ -294,7 +293,6 @@ function ImportUsersDialog({ open, onOpenChange, onDone }: ImportUsersDialogProp
                     </div>
                 )}
 
-                {/* MODIFIED FOOTER: Buttons on the LEFT side for Chatbot compatibility */}
                 <div className="mt-6 flex flex-col-reverse gap-3 sm:flex-row sm:justify-start">
                     <Button onClick={upload} disabled={uploading || !file} className="w-full sm:w-auto">
                         {uploading ? 'Mengunggah...' : 'Unggah & Proses'}
@@ -399,7 +397,7 @@ function ExportUsersDialog({ open, onOpenChange, roles }: ExportUsersDialogProps
 }
 
 // ────────────────────────────────────────────────────────────────────────────────
-// Types (Tetap Sama)
+// Types
 type PaginationLink = {
     url: string | null;
     label: string;
@@ -417,10 +415,12 @@ interface User {
         nis: string;
         angkatan: number;
         kelas: string;
+        wali_kelas_id?: number | null;
     } | null;
     guru_profile?: {
         nidn: string;
         mapel_keahlian: string;
+        telepon?: string | null;
     } | null;
 }
 
@@ -445,7 +445,7 @@ interface Props {
     filters: {
         search?: string;
         role?: string;
-        status?: boolean | null;
+        status?: string | null;
     };
 }
 
@@ -454,15 +454,12 @@ interface Props {
 export default function Users({ users, roles, filters }: Props) {
     const [search, setSearch] = useState(filters.search || '');
     const [selectedRole, setSelectedRole] = useState(filters.role ?? ROLE_ALL);
-    const [selectedStatus, setSelectedStatus] = useState(
-        filters.status === true ? STATUS_ACTIVE : filters.status === false ? STATUS_INACTIVE : STATUS_ALL,
-    );
+    const [selectedStatus, setSelectedStatus] = useState(filters.status ?? STATUS_ALL);
     const [isLoading, setIsLoading] = useState(false);
 
     const [openImport, setOpenImport] = useState(false);
     const [openExport, setOpenExport] = useState(false);
 
-    // Guard sederhana
     if (!users || !Array.isArray(users.data)) {
         return (
             <AppLayout>
@@ -545,7 +542,6 @@ export default function Users({ users, roles, filters }: Props) {
             <Head title="Manajemen User" />
 
             <div className="space-y-6 p-4 sm:p-6">
-                {/* Header Responsive */}
                 <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                     <div>
                         <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">Manajemen User</h1>
@@ -570,7 +566,6 @@ export default function Users({ users, roles, filters }: Props) {
                     </div>
                 </div>
 
-                {/* Filters Responsive */}
                 <Card>
                     <CardHeader className="pb-3">
                         <CardTitle className="text-base sm:text-lg">Filter & Pencarian</CardTitle>
@@ -630,7 +625,6 @@ export default function Users({ users, roles, filters }: Props) {
                     </CardContent>
                 </Card>
 
-                {/* Users Table Responsive Wrapper */}
                 <Card className="overflow-hidden">
                     <CardHeader className="pb-3">
                         <CardTitle>Daftar User</CardTitle>
@@ -694,7 +688,7 @@ export default function Users({ users, roles, filters }: Props) {
                                                     {user.guru_profile && (
                                                         <div className="flex flex-col gap-0.5 text-xs text-muted-foreground">
                                                             <span>
-                                                                NIDN: <span className="text-foreground">{user.guru_profile.nidn || '-'}</span>
+                                                                PEG ID: <span className="text-foreground">{user.guru_profile.nidn || '-'}</span>
                                                             </span>
                                                             <span>
                                                                 Mapel:{' '}
@@ -762,41 +756,57 @@ export default function Users({ users, roles, filters }: Props) {
                             </Table>
                         </div>
 
-                        {/* Pagination */}
-                        {(users.last_page ?? 1) > 1 && (
-                            <div className="flex flex-col items-center justify-between gap-4 border-t p-4 sm:flex-row">
+                        {/* Pagination Section FIX */}
+                        
+                            <div className="mt-4 flex flex-col items-center justify-start gap-4 border-t pt-4 sm:flex-row">
                                 <div className="text-sm text-muted-foreground">
-                                    Hal {users.current_page} dari {users.last_page} ({users.total} data)
+                                    Hal <span className="font-medium">{users.current_page}</span> dari{' '}
+                                    <span className="font-medium">{users.last_page}</span> ({users.total} data)
                                 </div>
-                                <div className="flex items-center gap-1">
-                                    {users.links.map((link, index) => {
-                                        const isPrev = link.label.includes('Previous');
-                                        const isNext = link.label.includes('Next');
-                                        const isDots = link.label.includes('...');
 
-                                        if (isDots)
-                                            return (
-                                                <span key={index} className="px-2 text-muted-foreground">
-                                                    ...
-                                                </span>
-                                            );
+                                <div className="flex flex-wrap items-center gap-1">
+                                    {/* Prev Button */}
+                                    <Button
+                                        variant="outline"
+                                        size="sm"
+                                        disabled={!users.links[0].url}
+                                        onClick={() => {
+                                            const url = users.links[0].url;
+                                            if (url) router.get(url);
+                                        }}
+                                    >
+                                        &laquo; Prev
+                                    </Button>
 
-                                        return (
-                                            <Button
-                                                key={index}
-                                                variant={link.active ? 'default' : 'outline'}
-                                                size="sm"
-                                                disabled={!link.url}
-                                                onClick={() => link.url && router.get(link.url)}
-                                                className={isPrev || isNext ? 'hidden sm:inline-flex' : ''}
-                                            >
-                                                {isPrev ? 'Sebelumnya' : isNext ? 'Selanjutnya' : link.label}
-                                            </Button>
-                                        );
-                                    })}
+                                    {/* Number Links */}
+                                    {users.links.slice(1, -1).map((link, index) => (
+                                        <Button
+                                            key={index}
+                                            variant={link.active ? 'default' : 'outline'}
+                                            size="sm"
+                                            onClick={() => link.url && router.get(link.url)}
+                                            disabled={!link.url}
+                                            className={link.label === '...' ? 'cursor-default' : ''}
+                                        >
+                                            <span dangerouslySetInnerHTML={{ __html: link.label }}></span>
+                                        </Button>
+                                    ))}
+
+                                    {/* Next Button */}
+                                    <Button
+                                        variant="outline"
+                                        size="sm"
+                                        disabled={!users.links[users.links.length - 1].url}
+                                        onClick={() => {
+                                            const url = users.links[users.links.length - 1].url;
+                                            if (url) router.get(url);
+                                        }}
+                                    >
+                                        Next &raquo;
+                                    </Button>
                                 </div>
                             </div>
-                        )}
+                        
                     </CardContent>
                 </Card>
             </div>

@@ -5,6 +5,7 @@ use App\Http\Controllers\Admin\MasterDataController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\JadwalController;
 use App\Http\Controllers\Admin\LaporanController;
+use App\Http\Controllers\Admin\BeritaController;
 use App\Http\Controllers\Admin\ChatbotConfigController;
 use App\Http\Controllers\Shared\AnnouncementController;
 use Illuminate\Support\Facades\Route;
@@ -60,7 +61,8 @@ Route::middleware(['auth', 'verified', 'role:admin'])->prefix('admin')
     
     // Announcements
     Route::resource('announcements', AnnouncementController::class);
-    
+    // Berita Website (Public News Management)
+    Route::resource('berita', BeritaController::class);
     // Chatbot Configuration
     Route::get('/chatbot-config', [ChatbotConfigController::class, 'index'])->name('chatbot-config.index');
     Route::put('/chatbot-config', [ChatbotConfigController::class, 'update'])->name('chatbot-config.update');

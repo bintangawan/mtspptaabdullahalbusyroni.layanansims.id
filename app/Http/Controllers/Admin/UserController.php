@@ -9,11 +9,10 @@ use App\Models\GuruProfile;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 use Spatie\Permission\Models\Role;
 use Maatwebsite\Excel\Facades\Excel;
-use Illuminate\Support\Facades\Auth; // ← tambahkan
+use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 use Maatwebsite\Excel\Concerns\FromArray;
 
@@ -22,18 +21,21 @@ class UserController extends Controller
     public function index(Request $request)
     {
         $query = User::with(['roles', 'siswaProfile', 'guruProfile'])
+            // 1. Filter Search
             ->when($request->search, function ($q, $search) {
                 $q->where(function ($query) use ($search) {
                     $query->where('name', 'like', "%{$search}%")
                           ->orWhere('email', 'like', "%{$search}%");
                 });
             })
-            ->when($request->role, function ($q, $role) {
-                $q->whereHas('roles', function ($roleQuery) use ($role) {
-                    $roleQuery->where('name', $role);
+            // 2. Filter Role (Fix: Cek jika bukan 'all')
+            ->when($request->role && $request->role !== 'all', function ($q) use ($request) {
+                $q->whereHas('roles', function ($roleQuery) use ($request) {
+                    $roleQuery->where('name', $request->role);
                 });
             })
-            ->when($request->has('status'), function ($q) use ($request) {
+            // 3. Filter Status (Fix: Cek jika bukan 'all')
+            ->when($request->filled('status') && $request->status !== 'all', function ($q) use ($request) {
                 if ($request->status === '1') {
                     $q->whereNotNull('email_verified_at');
                 } elseif ($request->status === '0') {
@@ -41,17 +43,19 @@ class UserController extends Controller
                 }
             })
             ->orderBy('created_at', 'desc');
-    
+
+        // Pagination 10 per halaman & pertahankan query string saat pindah page
         $users = $query->paginate(10)->withQueryString();
+        
         $roles = Role::all();
-    
+
         return Inertia::render('Admin/Users/Index', [
             'users' => $users,
             'roles' => $roles,
             'filters' => [
                 'search' => $request->search,
-                'role' => $request->role,
-                'status' => $request->status ? (bool) $request->status : null,
+                'role' => $request->role ?? 'all',
+                'status' => $request->status ?? 'all',
             ],
         ]);
     }
@@ -346,13 +350,12 @@ class UserController extends Controller
     public function export(Request $request)
     {
         $users = User::with(['roles', 'siswaProfile', 'guruProfile'])
-        ->when($request->role, function ($q, $role) {
-            $q->whereHas('roles', function ($roleQuery) use ($role) {
-                $roleQuery->where('name', $role);
+        ->when($request->role && $request->role !== 'all', function ($q) use ($request) {
+            $q->whereHas('roles', function ($roleQuery) use ($request) {
+                $roleQuery->where('name', $request->role);
             });
         })
-        // tambahkan ini agar ?status=1 / 0 berfungsi
-        ->when($request->has('status'), function ($q) use ($request) {
+        ->when($request->filled('status') && $request->status !== 'all', function ($q) use ($request) {
             if ($request->status === '1') {
                 $q->whereNotNull('email_verified_at');
             } elseif ($request->status === '0') {
@@ -409,6 +412,7 @@ class UserController extends Controller
             }
         }, $filename);
     }
+
     public function downloadTemplate()
     {
         // Header sesuai urutan logic import
