@@ -10,6 +10,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use Inertia\Inertia;
 use Maatwebsite\Excel\Concerns\FromArray;
@@ -25,64 +26,85 @@ class MasterDataController extends Controller
      */
     public function index()
     {
-        $terms = Term::orderBy('tahun', 'desc')->orderBy('semester')->get();
+        try {
+            $terms = Term::orderBy('tahun', 'desc')->orderBy('semester')->get();
 
-        // All subjects (non-paginated) for Section dropdown
-        $allSubjects = Subject::orderBy('nama')->get(['id', 'kode', 'nama', 'deskripsi']);
+            // All subjects (non-paginated) for Section dropdown
+            $allSubjects = Subject::orderBy('nama')->get(['id', 'kode', 'nama', 'deskripsi']);
 
-        // Paginated subjects for Subject table
-        $subjectsPaginator = Subject::orderBy('nama')
-            ->paginate(10, ['*'], 'subjects_page')
-            ->appends(request()->only(['subjects_page', 'sections_page']));
+            // Paginated subjects for Subject table
+            $subjectsPaginator = Subject::orderBy('nama')
+                ->paginate(10, ['*'], 'subjects_page')
+                ->appends(request()->only(['subjects_page', 'sections_page']));
 
-        $subjects = [
-            'data'  => $subjectsPaginator->items(),
-            'meta'  => [
-                'current_page' => $subjectsPaginator->currentPage(),
-                'from'         => $subjectsPaginator->firstItem(),
-                'to'           => $subjectsPaginator->lastItem(),
-                'last_page'    => $subjectsPaginator->lastPage(),
-                'total'        => $subjectsPaginator->total(),
-            ],
-            'links' => $subjectsPaginator->linkCollection(),
-        ];
+            $subjects = [
+                'data'  => $subjectsPaginator->items(),
+                'meta'  => [
+                    'current_page' => $subjectsPaginator->currentPage(),
+                    'from'         => $subjectsPaginator->firstItem(),
+                    'to'           => $subjectsPaginator->lastItem(),
+                    'last_page'    => $subjectsPaginator->lastPage(),
+                    'total'        => $subjectsPaginator->total(),
+                ],
+                'links' => $subjectsPaginator->linkCollection(),
+            ];
 
-        // Paginated sections for Section table
-        $sectionsPaginator = Section::with(['subject', 'guru', 'term'])
-            ->orderBy('id', 'desc')
-            ->paginate(10, ['*'], 'sections_page')
-            ->appends(request()->only(['subjects_page', 'sections_page']));
+            // Paginated sections for Section table
+            $sectionsPaginator = Section::with(['subject', 'guru', 'term'])
+                ->orderBy('id', 'desc')
+                ->paginate(10, ['*'], 'sections_page')
+                ->appends(request()->only(['subjects_page', 'sections_page']));
 
-        $sections = [
-            'data'  => $sectionsPaginator->items(),
-            'meta'  => [
-                'current_page' => $sectionsPaginator->currentPage(),
-                'from'         => $sectionsPaginator->firstItem(),
-                'to'           => $sectionsPaginator->lastItem(),
-                'last_page'    => $sectionsPaginator->lastPage(),
-                'total'        => $sectionsPaginator->total(),
-            ],
-            'links' => $sectionsPaginator->linkCollection(),
-        ];
+            $sections = [
+                'data'  => $sectionsPaginator->items(),
+                'meta'  => [
+                    'current_page' => $sectionsPaginator->currentPage(),
+                    'from'         => $sectionsPaginator->firstItem(),
+                    'to'           => $sectionsPaginator->lastItem(),
+                    'last_page'    => $sectionsPaginator->lastPage(),
+                    'total'        => $sectionsPaginator->total(),
+                ],
+                'links' => $sectionsPaginator->linkCollection(),
+            ];
 
-        // Guru list for Section dropdown
-        $gurus = User::whereHas('roles', fn ($q) => $q->where('name', 'guru'))
-            ->with('guruProfile')
-            ->get()
-            ->map(fn ($user) => [
-                'id'             => $user->id,
-                'name'           => $user->name,
-                'nidn'           => $user->guruProfile?->nidn,
-                'mapel_keahlian' => $user->guruProfile?->mapel_keahlian,
+            // Guru list for Section dropdown
+            $gurus = User::whereHas('roles', fn ($q) => $q->where('name', 'guru'))
+                ->with('guruProfile')
+                ->get()
+                ->map(fn ($user) => [
+                    'id'             => $user->id,
+                    'name'           => $user->name,
+                    'nidn'           => $user->guruProfile?->nidn,
+                    'mapel_keahlian' => $user->guruProfile?->mapel_keahlian,
+                ]);
+
+            return Inertia::render('Admin/MasterData', [
+                'terms'       => $terms,
+                'subjects'    => $subjects,
+                'allSubjects' => $allSubjects,
+                'sections'    => $sections,
+                'gurus'       => $gurus,
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Error loading MasterData index: ' . $e->getMessage(), [
+                'trace' => $e->getTraceAsString(),
             ]);
 
-        return Inertia::render('Admin/MasterData', [
-            'terms'       => $terms,
-            'subjects'    => $subjects,
-            'allSubjects' => $allSubjects,
-            'sections'    => $sections,
-            'gurus'       => $gurus,
-        ]);
+            // Fallback: return empty data sehingga halaman tetap tampil
+            $emptyPaginated = [
+                'data'  => [],
+                'meta'  => ['current_page' => 1, 'from' => null, 'to' => null, 'last_page' => 1, 'total' => 0],
+                'links' => collect([]),
+            ];
+
+            return Inertia::render('Admin/MasterData', [
+                'terms'       => [],
+                'subjects'    => $emptyPaginated,
+                'allSubjects' => [],
+                'sections'    => $emptyPaginated,
+                'gurus'       => [],
+            ]);
+        }
     }
 
     // ─── Term CRUD ───────────────────────────────────────────────

@@ -500,6 +500,18 @@ function EmptyRow({ colSpan, message }: { colSpan: number; message: string }) {
 // ────────────────────────────────────────────────────────────────
 
 export default function MasterData({ terms, subjects, allSubjects, sections, gurus }: Props) {
+    // Defensive defaults to prevent crashes if props are missing/malformed
+    const safeTerms = terms ?? [];
+    const safeAllSubjects = allSubjects ?? [];
+    const safeGurus = gurus ?? [];
+    const emptyPaginated: PaginatedData<never> = {
+        data: [],
+        meta: { current_page: 1, from: 0, to: 0, last_page: 1, total: 0, per_page: 10, path: '', links: [] },
+        links: [],
+    };
+    const safeSubjects = subjects ?? (emptyPaginated as unknown as PaginatedData<Subject>);
+    const safeSections = sections ?? (emptyPaginated as unknown as PaginatedData<Section>);
+
     const [activeTab, setActiveTab] = useState<'terms' | 'subjects' | 'sections'>('terms');
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [editingItem, setEditingItem] = useState<Term | Subject | Section | undefined>(undefined);
@@ -597,7 +609,7 @@ export default function MasterData({ terms, subjects, allSubjects, sections, gur
     const gotoSubjectsPage = (page: number | string) => {
         router.get(
             '/admin/master-data',
-            { subjects_page: page, sections_page: sections.meta.current_page },
+            { subjects_page: page, sections_page: safeSections.meta.current_page },
             { preserveState: true, preserveScroll: true, replace: true },
         );
     };
@@ -605,7 +617,7 @@ export default function MasterData({ terms, subjects, allSubjects, sections, gur
     const gotoSectionsPage = (page: number | string) => {
         router.get(
             '/admin/master-data',
-            { sections_page: page, subjects_page: subjects.meta.current_page },
+            { sections_page: page, subjects_page: safeSubjects.meta.current_page },
             { preserveState: true, preserveScroll: true, replace: true },
         );
     };
@@ -660,8 +672,8 @@ export default function MasterData({ terms, subjects, allSubjects, sections, gur
                                             </TableRow>
                                         </TableHeader>
                                         <TableBody>
-                                            {terms.length === 0 && <EmptyRow colSpan={5} message="Belum ada data term." />}
-                                            {terms.map((term) => (
+                                            {safeTerms.length === 0 && <EmptyRow colSpan={5} message="Belum ada data term." />}
+                                            {safeTerms.map((term) => (
                                                 <TableRow key={term.id}>
                                                     <TableCell className="font-medium">{term.tahun}</TableCell>
                                                     <TableCell>
@@ -759,10 +771,10 @@ export default function MasterData({ terms, subjects, allSubjects, sections, gur
                                             </TableRow>
                                         </TableHeader>
                                         <TableBody>
-                                            {subjects.data.length === 0 && (
+                                            {safeSubjects.data.length === 0 && (
                                                 <EmptyRow colSpan={5} message="Belum ada data mata pelajaran." />
                                             )}
-                                            {subjects.data.map((subject) => (
+                                            {safeSubjects.data.map((subject) => (
                                                 <TableRow key={subject.id}>
                                                     <TableCell className="font-medium">{subject.kode}</TableCell>
                                                     <TableCell>{subject.nama}</TableCell>
@@ -806,8 +818,8 @@ export default function MasterData({ terms, subjects, allSubjects, sections, gur
                                 </div>
 
                                 <PaginationControls
-                                    meta={subjects.meta}
-                                    links={subjects.links}
+                                    meta={safeSubjects.meta}
+                                    links={safeSubjects.links}
                                     onPageChange={gotoSubjectsPage}
                                     keyPrefix="subj"
                                 />
@@ -861,8 +873,8 @@ export default function MasterData({ terms, subjects, allSubjects, sections, gur
                                             </TableRow>
                                         </TableHeader>
                                         <TableBody>
-                                            {sections.data.length === 0 && <EmptyRow colSpan={6} message="Belum ada data kelas." />}
-                                            {sections.data.map((section) => (
+                                            {safeSections.data.length === 0 && <EmptyRow colSpan={6} message="Belum ada data kelas." />}
+                                            {safeSections.data.map((section) => (
                                                 <TableRow key={section.id}>
                                                     <TableCell className="font-medium">{section.subject?.nama ?? '-'}</TableCell>
                                                     <TableCell>{section.guru?.name ?? '-'}</TableCell>
@@ -909,8 +921,8 @@ export default function MasterData({ terms, subjects, allSubjects, sections, gur
                                 </div>
 
                                 <PaginationControls
-                                    meta={sections.meta}
-                                    links={sections.links}
+                                    meta={safeSections.meta}
+                                    links={safeSections.links}
                                     onPageChange={gotoSectionsPage}
                                     keyPrefix="sec"
                                 />
@@ -1055,7 +1067,7 @@ export default function MasterData({ terms, subjects, allSubjects, sections, gur
                                                     <SelectValue placeholder="Pilih mata pelajaran" />
                                                 </SelectTrigger>
                                                 <SelectContent>
-                                                    {(allSubjects ?? []).map((subject) => (
+                                                    {safeAllSubjects.map((subject) => (
                                                         <SelectItem key={subject.id} value={subject.id.toString()}>
                                                             {subject.kode} - {subject.nama}
                                                         </SelectItem>
@@ -1078,7 +1090,7 @@ export default function MasterData({ terms, subjects, allSubjects, sections, gur
                                                     <SelectValue placeholder="Pilih guru" />
                                                 </SelectTrigger>
                                                 <SelectContent>
-                                                    {gurus.map((g) => (
+                                                    {safeGurus.map((g) => (
                                                         <SelectItem key={g.id} value={g.id.toString()}>
                                                             {g.name}
                                                             {g.mapel_keahlian ? ` — ${g.mapel_keahlian}` : ''}
@@ -1102,7 +1114,7 @@ export default function MasterData({ terms, subjects, allSubjects, sections, gur
                                                     <SelectValue placeholder="Pilih term" />
                                                 </SelectTrigger>
                                                 <SelectContent>
-                                                    {terms.map((term) => (
+                                                    {safeTerms.map((term) => (
                                                         <SelectItem key={term.id} value={term.id.toString()}>
                                                             {term.tahun} - {term.semester.charAt(0).toUpperCase() + term.semester.slice(1)}
                                                             {term.aktif ? ' (Aktif)' : ''}
