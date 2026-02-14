@@ -76,6 +76,7 @@ interface Guru {
 interface Props {
     terms: Term[];
     subjects: PaginatedData<Subject>;
+    allSubjects: Subject[]; // 🔥 TAMBAHAN
     sections: PaginatedData<Section>;
     gurus: Guru[];
 }
@@ -302,7 +303,7 @@ function ImportDialog({ open, onOpenChange, uploadUrl, title, onDone }: ImportDi
 
 // ────────────────────────────────────────────────────────────────────────────────
 
-export default function MasterData({ terms, subjects, sections, gurus }: Props) {
+export default function MasterData({ terms, subjects, allSubjects, sections, gurus }: Props) {
     const [activeTab, setActiveTab] = useState<'terms' | 'subjects' | 'sections'>('terms');
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [editingItem, setEditingItem] = useState<Term | Subject | Section | undefined>(undefined);
@@ -316,7 +317,12 @@ export default function MasterData({ terms, subjects, sections, gurus }: Props) 
         window.open(`/admin/master-data/template-${type}`, '_blank');
     };
 
+    const [isSubmitting, setIsSubmitting] = useState(false);
     const handleSubmit = () => {
+        if (isSubmitting) return; // 🔥 cegah double klik
+
+        setIsSubmitting(true);
+
         const method: 'put' | 'post' = editingItem ? 'put' : 'post';
         const endpoint = editingItem ? `/admin/master-data/${activeTab}/${(editingItem as { id: number }).id}` : `/admin/master-data/${activeTab}`;
 
@@ -329,6 +335,9 @@ export default function MasterData({ terms, subjects, sections, gurus }: Props) 
             },
             onError: () => {
                 toast.error('Terjadi kesalahan');
+            },
+            onFinish: () => {
+                setIsSubmitting(false); // 🔥 reset
             },
         });
     };
@@ -539,7 +548,7 @@ export default function MasterData({ terms, subjects, sections, gurus }: Props) 
                                             </TableRow>
                                         </TableHeader>
                                         <TableBody>
-                                            {subjects.data.map((subject) => (
+                                            {allSubjects.map((subject) => (
                                                 <TableRow key={subject.id}>
                                                     <TableCell className="font-medium">{subject.kode}</TableCell>
                                                     <TableCell>{subject.nama}</TableCell>
@@ -885,9 +894,9 @@ export default function MasterData({ terms, subjects, sections, gurus }: Props) 
                                                     <SelectValue placeholder="Pilih mata pelajaran" />
                                                 </SelectTrigger>
                                                 <SelectContent>
-                                                    {subjects.data.map((subject) => (
+                                                    {allSubjects.map((subject) => (
                                                         <SelectItem key={subject.id} value={subject.id.toString()}>
-                                                            {subject.nama}
+                                                            {subject.kode} - {subject.nama}
                                                         </SelectItem>
                                                     ))}
                                                 </SelectContent>

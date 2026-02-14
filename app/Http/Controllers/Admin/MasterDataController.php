@@ -1,81 +1,117 @@
 <?php
-
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\Term;
-use App\Models\Subject;
 use App\Models\Section;
+use App\Models\Subject;
+use App\Models\Term;
 use App\Models\User;
 use Illuminate\Http\Request;
-use Inertia\Inertia;
-use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
-use Maatwebsite\Excel\Facades\Excel;
+use Illuminate\Support\Facades\Validator;
+use Inertia\Inertia;
 use Maatwebsite\Excel\Concerns\FromArray;
-use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\ToModel;
 use Maatwebsite\Excel\Concerns\WithBatchInserts;
 use Maatwebsite\Excel\Concerns\WithChunkReading;
-use Maatwebsite\Excel\Concerns\WithValidation;
+use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithStartRow;
+use Maatwebsite\Excel\Concerns\WithValidation;
+use Maatwebsite\Excel\Facades\Excel;
 
 class MasterDataController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $terms = Term::orderBy('tahun', 'desc')->get();
+        /*
+    |--------------------------------------------------------------------------
+    | TERMS (FULL)
+    |--------------------------------------------------------------------------
+    */
+        $terms = Term::orderByDesc('tahun')
+            ->orderByDesc('semester')
+            ->get(['id', 'tahun', 'semester', 'aktif', 'created_at']);
 
-        // Subjects paginator
+        /*
+    |--------------------------------------------------------------------------
+    | SUBJECTS PAGINATED (TABLE)
+    |--------------------------------------------------------------------------
+    */
         $subjectsPaginator = Subject::orderBy('nama')
-            ->paginate(10, ['*'], 'subjects_page')
-            ->appends(request()->only(['subjects_page','sections_page']));
+            ->paginate(10, ['id', 'kode', 'nama', 'deskripsi', 'created_at'], 'subjects_page')
+            ->appends($request->only(['subjects_page', 'sections_page']));
 
         $subjects = [
-            'data' => $subjectsPaginator->items(),
-            'meta' => [
+            'data'  => $subjectsPaginator->items(),
+            'meta'  => [
                 'current_page' => $subjectsPaginator->currentPage(),
-                'from' => $subjectsPaginator->firstItem(),
-                'to' => $subjectsPaginator->lastItem(),
-                'last_page' => $subjectsPaginator->lastPage(),
-                'total' => $subjectsPaginator->total(),
+                'from'         => $subjectsPaginator->firstItem(),
+                'to'           => $subjectsPaginator->lastItem(),
+                'last_page'    => $subjectsPaginator->lastPage(),
+                'per_page'     => $subjectsPaginator->perPage(),
+                'total'        => $subjectsPaginator->total(),
             ],
             'links' => $subjectsPaginator->linkCollection(),
         ];
 
-        // Sections paginator
-        $sectionsPaginator = Section::with(['subject', 'guru', 'term'])
-            ->orderBy('id', 'desc')
-            ->paginate(10, ['*'], 'sections_page')
-            ->appends(request()->only(['subjects_page','sections_page']));
+        /*
+    |--------------------------------------------------------------------------
+    | ALL SUBJECTS (DROPDOWN)
+    |--------------------------------------------------------------------------
+    */
+        $allSubjects = Subject::orderBy('nama')
+            ->get(['id', 'kode', 'nama']);
+
+        /*
+    |--------------------------------------------------------------------------
+    | SECTIONS PAGINATED
+    |--------------------------------------------------------------------------
+    */
+        $sectionsPaginator = Section::with([
+            'subject:id,kode,nama',
+            'guru:id,name,email',
+            'term:id,tahun,semester',
+        ])
+            ->orderByDesc('id')
+            ->paginate(10, ['id', 'subject_id', 'guru_id', 'term_id', 'kapasitas', 'created_at'], 'sections_page')
+            ->appends($request->only(['subjects_page', 'sections_page']));
 
         $sections = [
-            'data' => $sectionsPaginator->items(),
-            'meta' => [
+            'data'  => $sectionsPaginator->items(),
+            'meta'  => [
                 'current_page' => $sectionsPaginator->currentPage(),
-                'from' => $sectionsPaginator->firstItem(),
-                'to' => $sectionsPaginator->lastItem(),
-                'last_page' => $sectionsPaginator->lastPage(),
-                'total' => $sectionsPaginator->total(),
+                'from'         => $sectionsPaginator->firstItem(),
+                'to'           => $sectionsPaginator->lastItem(),
+                'last_page'    => $sectionsPaginator->lastPage(),
+                'per_page'     => $sectionsPaginator->perPage(),
+                'total'        => $sectionsPaginator->total(),
             ],
             'links' => $sectionsPaginator->linkCollection(),
         ];
 
-        $gurus = User::whereHas('roles', fn($q) => $q->where('name', 'guru'))
-            ->with('guruProfile')
-            ->get()
-            ->map(fn($user) => [
-                'id' => $user->id,
-                'name' => $user->name,
-                'nidn' => $user->guruProfile?->nidn,
-                'mapel_keahlian' => $user->guruProfile?->mapel_keahlian
-            ]);
+        /*
+    |--------------------------------------------------------------------------
+    | GURUS
+    |--------------------------------------------------------------------------
+    */
+        $gurus = User::role('guru')
+            ->with('guruProfile:id,user_id,nidn,mapel_keahlian')
+            ->get(['id', 'name'])
+            ->map(function ($user) {
+                return [
+                    'id'             => $user->id,
+                    'name'           => $user->name,
+                    'nidn'           => $user->guruProfile?->nidn,
+                    'mapel_keahlian' => $user->guruProfile?->mapel_keahlian,
+                ];
+            });
 
         return Inertia::render('Admin/MasterData', [
-            'terms' => $terms,
-            'subjects' => $subjects,
-            'sections' => $sections,
-            'gurus' => $gurus,
+            'terms'       => $terms,
+            'subjects'    => $subjects,
+            'allSubjects' => $allSubjects,
+            'sections'    => $sections,
+            'gurus'       => $gurus,
         ]);
     }
 
@@ -84,11 +120,11 @@ class MasterDataController extends Controller
     public function storeTerm(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'tahun' => 'required|string|regex:/^\d{4}\/\d{4}$/|unique:terms,tahun',
+            'tahun'    => 'required|string|regex:/^\d{4}\/\d{4}$/|unique:terms,tahun',
             'semester' => 'required|in:ganjil,genap',
-            'aktif' => 'boolean',
+            'aktif'    => 'boolean',
         ], [
-            'tahun.regex' => 'Format tahun harus YYYY/YYYY (contoh: 2024/2025)',
+            'tahun.regex'  => 'Format tahun harus YYYY/YYYY (contoh: 2024/2025)',
             'tahun.unique' => 'Tahun ajaran sudah ada.',
         ]);
 
@@ -102,20 +138,20 @@ class MasterDataController extends Controller
 
         if ($exists) {
             return back()->withErrors([
-                'semester' => 'Kombinasi tahun dan semester sudah ada.'
+                'semester' => 'Kombinasi tahun dan semester sudah ada.',
             ])->withInput();
         }
 
         try {
-            DB::transaction(function() use ($request) {
+            DB::transaction(function () use ($request) {
                 if ($request->aktif) {
                     Term::where('aktif', true)->update(['aktif' => false]);
                 }
 
                 Term::create([
-                    'tahun' => $request->tahun,
+                    'tahun'    => $request->tahun,
                     'semester' => $request->semester,
-                    'aktif' => $request->aktif ?? false,
+                    'aktif'    => $request->aktif ?? false,
                 ]);
             });
 
@@ -128,9 +164,9 @@ class MasterDataController extends Controller
     public function updateTerm(Request $request, Term $term)
     {
         $validator = Validator::make($request->all(), [
-            'tahun' => 'required|string|regex:/^\d{4}\/\d{4}$/|unique:terms,tahun,' . $term->id,
+            'tahun'    => 'required|string|regex:/^\d{4}\/\d{4}$/|unique:terms,tahun,' . $term->id,
             'semester' => 'required|in:ganjil,genap',
-            'aktif' => 'boolean',
+            'aktif'    => 'boolean',
         ]);
 
         if ($validator->fails()) {
@@ -144,12 +180,12 @@ class MasterDataController extends Controller
 
         if ($exists) {
             return back()->withErrors([
-                'semester' => 'Kombinasi tahun dan semester sudah ada.'
+                'semester' => 'Kombinasi tahun dan semester sudah ada.',
             ])->withInput();
         }
 
         try {
-            DB::transaction(function() use ($request, $term) {
+            DB::transaction(function () use ($request, $term) {
                 if ($request->aktif) {
                     Term::where('id', '!=', $term->id)
                         ->where('aktif', true)
@@ -157,9 +193,9 @@ class MasterDataController extends Controller
                 }
 
                 $term->update([
-                    'tahun' => $request->tahun,
+                    'tahun'    => $request->tahun,
                     'semester' => $request->semester,
-                    'aktif' => $request->aktif ?? false,
+                    'aktif'    => $request->aktif ?? false,
                 ]);
             });
 
@@ -174,7 +210,7 @@ class MasterDataController extends Controller
         try {
             if ($term->sections()->count() > 0) {
                 return back()->withErrors([
-                    'error' => 'Tidak dapat menghapus tahun ajaran yang sudah memiliki kelas.'
+                    'error' => 'Tidak dapat menghapus tahun ajaran yang sudah memiliki kelas.',
                 ]);
             }
 
@@ -188,7 +224,7 @@ class MasterDataController extends Controller
     public function activateTerm(Term $term)
     {
         try {
-            DB::transaction(function() use ($term) {
+            DB::transaction(function () use ($term) {
                 Term::where('aktif', true)->update(['aktif' => false]);
                 $term->update(['aktif' => true]);
             });
@@ -204,8 +240,8 @@ class MasterDataController extends Controller
     public function storeSubject(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'kode' => 'required|string|max:10|unique:subjects,kode',
-            'nama' => 'required|string|max:100',
+            'kode'      => 'required|string|max:10|unique:subjects,kode',
+            'nama'      => 'required|string|max:100',
             'deskripsi' => 'nullable|string|max:500',
         ]);
 
@@ -215,8 +251,8 @@ class MasterDataController extends Controller
 
         try {
             Subject::create([
-                'kode' => strtoupper($request->kode),
-                'nama' => $request->nama,
+                'kode'      => strtoupper($request->kode),
+                'nama'      => $request->nama,
                 'deskripsi' => $request->deskripsi,
             ]);
 
@@ -229,8 +265,8 @@ class MasterDataController extends Controller
     public function updateSubject(Request $request, Subject $subject)
     {
         $validator = Validator::make($request->all(), [
-            'kode' => 'required|string|max:10|unique:subjects,kode,' . $subject->id,
-            'nama' => 'required|string|max:100',
+            'kode'      => 'required|string|max:10|unique:subjects,kode,' . $subject->id,
+            'nama'      => 'required|string|max:100',
             'deskripsi' => 'nullable|string|max:500',
         ]);
 
@@ -240,8 +276,8 @@ class MasterDataController extends Controller
 
         try {
             $subject->update([
-                'kode' => strtoupper($request->kode),
-                'nama' => $request->nama,
+                'kode'      => strtoupper($request->kode),
+                'nama'      => $request->nama,
                 'deskripsi' => $request->deskripsi,
             ]);
 
@@ -256,7 +292,7 @@ class MasterDataController extends Controller
         try {
             if ($subject->sections()->count() > 0) {
                 return back()->withErrors([
-                    'error' => 'Tidak dapat menghapus mata pelajaran yang sudah memiliki kelas.'
+                    'error' => 'Tidak dapat menghapus mata pelajaran yang sudah memiliki kelas.',
                 ]);
             }
 
@@ -273,10 +309,10 @@ class MasterDataController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'subject_id' => 'required|exists:subjects,id',
-            'guru_id' => 'required|exists:users,id',
-            'term_id' => 'required|exists:terms,id',
-            'kapasitas' => 'nullable|integer|min:1|max:50',
-            'jadwal' => 'nullable|array',
+            'guru_id'    => 'required|exists:users,id',
+            'term_id'    => 'required|exists:terms,id',
+            'kapasitas'  => 'nullable|integer|min:1|max:50',
+            'jadwal'     => 'nullable|array',
         ]);
 
         if ($validator->fails()) {
@@ -285,10 +321,10 @@ class MasterDataController extends Controller
 
         try {
             Section::create([
-                'subject_id' => $request->subject_id,
-                'guru_id' => $request->guru_id,
-                'term_id' => $request->term_id,
-                'kapasitas' => $request->kapasitas,
+                'subject_id'  => $request->subject_id,
+                'guru_id'     => $request->guru_id,
+                'term_id'     => $request->term_id,
+                'kapasitas'   => $request->kapasitas,
                 'jadwal_json' => $request->jadwal ?? [],
             ]);
 
@@ -302,10 +338,10 @@ class MasterDataController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'subject_id' => 'required|exists:subjects,id',
-            'guru_id' => 'required|exists:users,id',
-            'term_id' => 'required|exists:terms,id',
-            'kapasitas' => 'nullable|integer|min:1|max:50',
-            'jadwal' => 'nullable|array',
+            'guru_id'    => 'required|exists:users,id',
+            'term_id'    => 'required|exists:terms,id',
+            'kapasitas'  => 'nullable|integer|min:1|max:50',
+            'jadwal'     => 'nullable|array',
         ]);
 
         if ($validator->fails()) {
@@ -314,10 +350,10 @@ class MasterDataController extends Controller
 
         try {
             $section->update([
-                'subject_id' => $request->subject_id,
-                'guru_id' => $request->guru_id,
-                'term_id' => $request->term_id,
-                'kapasitas' => $request->kapasitas,
+                'subject_id'  => $request->subject_id,
+                'guru_id'     => $request->guru_id,
+                'term_id'     => $request->term_id,
+                'kapasitas'   => $request->kapasitas,
                 'jadwal_json' => $request->jadwal ?? [],
             ]);
 
@@ -332,13 +368,13 @@ class MasterDataController extends Controller
         try {
             if ($section->students()->count() > 0) {
                 return back()->withErrors([
-                    'error' => 'Tidak dapat menghapus kelas yang sudah memiliki siswa.'
+                    'error' => 'Tidak dapat menghapus kelas yang sudah memiliki siswa.',
                 ]);
             }
 
             if ($section->materials()->count() > 0 || $section->assignments()->count() > 0) {
                 return back()->withErrors([
-                    'error' => 'Tidak dapat menghapus kelas yang sudah memiliki materi atau tugas.'
+                    'error' => 'Tidak dapat menghapus kelas yang sudah memiliki materi atau tugas.',
                 ]);
             }
 
@@ -352,7 +388,7 @@ class MasterDataController extends Controller
     public function importSubjects(Request $request)
     {
         $request->validate([
-            'file' => 'required|mimes:xlsx,xls,csv|max:2048'
+            'file' => 'required|mimes:xlsx,xls,csv|max:2048',
         ]);
 
         try {
@@ -366,25 +402,29 @@ class MasterDataController extends Controller
     public function exportSubjectsTemplate()
     {
         $headers = ['kode', 'nama', 'deskripsi'];
-        $data = [
+        $data    = [
             ['MTK001', 'Matematika', 'Mata pelajaran matematika dasar'],
             ['IPA001', 'IPA', 'Ilmu Pengetahuan Alam'],
         ];
 
-        return Excel::download(new class($headers, $data) implements FromArray, WithHeadings {
+        return Excel::download(new class($headers, $data) implements FromArray, WithHeadings
+        {
             private $headers;
             private $data;
 
-            public function __construct($headers, $data) {
+            public function __construct($headers, $data)
+            {
                 $this->headers = $headers;
-                $this->data = $data;
+                $this->data    = $data;
             }
 
-            public function array(): array {
+            public function array(): array
+            {
                 return $this->data;
             }
 
-            public function headings(): array {
+            public function headings(): array
+            {
                 return $this->headers;
             }
         }, 'template_subjects.xlsx');
@@ -394,7 +434,7 @@ class MasterDataController extends Controller
     public function importSections(Request $request)
     {
         $request->validate([
-            'file' => 'required|mimes:xlsx,xls,csv|max:2048'
+            'file' => 'required|mimes:xlsx,xls,csv|max:2048',
         ]);
 
         try {
@@ -408,25 +448,29 @@ class MasterDataController extends Controller
     public function exportSectionsTemplate()
     {
         $headers = ['subject_kode', 'guru_email', 'term_tahun', 'term_semester', 'kapasitas'];
-        $data = [
+        $data    = [
             ['MTK001', 'guru1@sims.com', '2024/2025', 'ganjil', 30],
             ['IPA001', 'guru2@sims.com', '2024/2025', 'ganjil', 25],
         ];
 
-        return Excel::download(new class($headers, $data) implements FromArray, WithHeadings {
+        return Excel::download(new class($headers, $data) implements FromArray, WithHeadings
+        {
             private $headers;
             private $data;
 
-            public function __construct($headers, $data) {
+            public function __construct($headers, $data)
+            {
                 $this->headers = $headers;
-                $this->data = $data;
+                $this->data    = $data;
             }
 
-            public function array(): array {
+            public function array(): array
+            {
                 return $this->data;
             }
 
-            public function headings(): array {
+            public function headings(): array
+            {
                 return $this->headers;
             }
         }, 'template_sections.xlsx');
@@ -439,8 +483,8 @@ class SubjectImport implements ToModel, WithBatchInserts, WithChunkReading, With
     public function model(array $row)
     {
         return new Subject([
-            'kode' => strtoupper($row[0]),
-            'nama' => $row[1],
+            'kode'      => strtoupper($row[0]),
+            'nama'      => $row[1],
             'deskripsi' => $row[2] ?? null,
         ]);
     }
@@ -465,7 +509,8 @@ class SubjectImport implements ToModel, WithBatchInserts, WithChunkReading, With
     }
 }
 
-class SectionImport implements ToModel, WithBatchInserts, WithChunkReading, WithValidation, WithStartRow // <--- Tambahkan WithStartRow
+class SectionImport implements ToModel, WithBatchInserts, WithChunkReading, WithValidation, WithStartRow// <--- Tambahkan WithStartRow
+
 {
     /**
      * Tentukan baris berapa data dimulai (melewati header)
@@ -478,28 +523,30 @@ class SectionImport implements ToModel, WithBatchInserts, WithChunkReading, With
     public function model(array $row)
     {
         // Pastikan row tidak kosong
-        if (!isset($row[0])) return null;
+        if (! isset($row[0])) {
+            return null;
+        }
 
         $subject = Subject::where('kode', strtoupper($row[0]))->first();
-        $guru = User::where('email', $row[1])->first();
-        $term = Term::where('tahun', $row[2])->where('semester', $row[3])->first();
+        $guru    = User::where('email', $row[1])->first();
+        $term    = Term::where('tahun', $row[2])->where('semester', $row[3])->first();
 
         // Jika data referensi tidak ditemukan, lempar error spesifik
-        if (!$subject) {
+        if (! $subject) {
             throw new \Exception("Mata pelajaran dengan kode '{$row[0]}' tidak ditemukan.");
         }
-        if (!$guru) {
+        if (! $guru) {
             throw new \Exception("Guru dengan email '{$row[1]}' tidak ditemukan.");
         }
-        if (!$term) {
+        if (! $term) {
             throw new \Exception("Term tahun '{$row[2]}' semester '{$row[3]}' tidak ditemukan/tidak aktif.");
         }
 
         return new Section([
-            'subject_id' => $subject->id,
-            'guru_id'    => $guru->id,
-            'term_id'    => $term->id,
-            'kapasitas'  => $row[4] ?? 30,
+            'subject_id'  => $subject->id,
+            'guru_id'     => $guru->id,
+            'term_id'     => $term->id,
+            'kapasitas'   => $row[4] ?? 30,
             'jadwal_json' => [],
         ]);
     }
@@ -524,7 +571,7 @@ class SectionImport implements ToModel, WithBatchInserts, WithChunkReading, With
             '4' => 'nullable|integer|min:1|max:50',
         ];
     }
-    
+
     // Opsional: Custom validation messages agar error lebih mudah dibaca user
     public function customValidationMessages()
     {
