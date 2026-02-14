@@ -4,6 +4,11 @@ import react from '@vitejs/plugin-react';
 import laravel from 'laravel-vite-plugin';
 import { defineConfig } from 'vite';
 
+// Wayfinder is only useful during dev (generates route/action helpers).
+// In production build it can fail if the php artisan command has issues,
+// so we conditionally include it.
+const isProduction = process.env.NODE_ENV === 'production';
+
 export default defineConfig({
     plugins: [
         laravel({
@@ -13,9 +18,9 @@ export default defineConfig({
         }),
         react(),
         tailwindcss(),
-        wayfinder({
-            formVariants: true,
-        }),
+        ...(!isProduction
+            ? [wayfinder({ formVariants: true })]
+            : []),
     ],
     esbuild: {
         jsx: 'automatic',

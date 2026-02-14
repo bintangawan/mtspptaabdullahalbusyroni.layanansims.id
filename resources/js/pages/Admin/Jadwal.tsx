@@ -180,6 +180,13 @@ type FormData = {
 };
 
 export default function Jadwal({ sections, terms, subjects, gurus, activeTerm, filters }: Props) {
+    // Defensive defaults to prevent SSR crashes if props are missing/malformed
+    const safeTerms = terms ?? [];
+    const safeSubjects = subjects ?? [];
+    const safeGurus = gurus ?? [];
+    const safeFilters = filters ?? {};
+    const safeSections = sections ?? { data: [], current_page: 1, last_page: 1, from: null, to: null, total: 0, links: [] };
+
     const [isCreateOpen, setIsCreateOpen] = useState(false);
     const [isEditOpen, setIsEditOpen] = useState(false);
     const [editingSection, setEditingSection] = useState<Section | null>(null);
@@ -187,8 +194,8 @@ export default function Jadwal({ sections, terms, subjects, gurus, activeTerm, f
     // State untuk loading state manual saat delete (karena router.delete tidak return promise standar)
     const [isDeleting, setIsDeleting] = useState(false);
 
-    const [searchTerm, setSearchTerm] = useState<string>(filters.search ?? '');
-    const [selectedTerm, setSelectedTerm] = useState<string>(filters.term_id ?? activeTerm?.id?.toString() ?? '');
+    const [searchTerm, setSearchTerm] = useState<string>(safeFilters.search ?? '');
+    const [selectedTerm, setSelectedTerm] = useState<string>(safeFilters.term_id ?? activeTerm?.id?.toString() ?? '');
 
     const {
         data,
@@ -209,14 +216,14 @@ export default function Jadwal({ sections, terms, subjects, gurus, activeTerm, f
 
     const pagination = useMemo(
         () => ({
-            current_page: sections.current_page,
-            last_page: sections.last_page,
-            from: sections.from,
-            to: sections.to,
-            total: sections.total,
-            links: sections.links,
+            current_page: safeSections.current_page ?? 1,
+            last_page: safeSections.last_page ?? 1,
+            from: safeSections.from ?? null,
+            to: safeSections.to ?? null,
+            total: safeSections.total ?? 0,
+            links: safeSections.links ?? [],
         }),
-        [sections],
+        [safeSections],
     );
 
     // Reset form saat modal create dibuka
@@ -230,7 +237,7 @@ export default function Jadwal({ sections, terms, subjects, gurus, activeTerm, f
 
     const handleSearch = (): void => {
         router.get(
-            route('admin.jadwal.index'),
+            '/admin/jadwal',
             { search: searchTerm, term_id: selectedTerm },
             { preserveState: true, replace: true, preserveScroll: true },
         );
@@ -239,11 +246,11 @@ export default function Jadwal({ sections, terms, subjects, gurus, activeTerm, f
     const handleReset = (): void => {
         setSearchTerm('');
         setSelectedTerm(activeTerm?.id?.toString() ?? '');
-        router.get(route('admin.jadwal.index'), {}, { replace: true });
+        router.get('/admin/jadwal', {}, { replace: true });
     };
 
     const handleCreate = (): void => {
-        post(route('admin.jadwal.store'), {
+        post('/admin/jadwal', {
             onSuccess: () => {
                 setIsCreateOpen(false);
                 reset();
@@ -276,7 +283,7 @@ export default function Jadwal({ sections, terms, subjects, gurus, activeTerm, f
 
     const handleUpdate = (): void => {
         if (!editingSection) return;
-        put(route('admin.jadwal.update', editingSection.id), {
+        put(`/admin/jadwal/${editingSection.id}`, {
             onSuccess: () => {
                 setIsEditOpen(false);
                 setEditingSection(null);
@@ -293,7 +300,7 @@ export default function Jadwal({ sections, terms, subjects, gurus, activeTerm, f
 
     const handleDelete = (id: number) => {
         setIsDeleting(true);
-        router.delete(route('admin.jadwal.destroy', id), {
+        router.delete(`/admin/jadwal/${id}`, {
             onSuccess: () => {
                 toast.success('Jadwal berhasil dihapus');
                 setIsDeleting(false);
@@ -331,7 +338,7 @@ export default function Jadwal({ sections, terms, subjects, gurus, activeTerm, f
 
     const gotoPage = (page: number | string): void => {
         router.get(
-            route('admin.jadwal.index'),
+            '/admin/jadwal',
             { page, search: searchTerm, term_id: selectedTerm },
             { preserveState: true, preserveScroll: true, replace: true },
         );
@@ -370,7 +377,7 @@ export default function Jadwal({ sections, terms, subjects, gurus, activeTerm, f
                                                             <SelectValue placeholder="Pilih mata pelajaran" />
                                                         </SelectTrigger>
                                                         <SelectContent>
-                                                            {subjects.map((subject) => (
+                                                            {safeSubjects.map((subject) => (
                                                                 <SelectItem key={subject.id} value={subject.id.toString()}>
                                                                     {subject.kode} - {subject.nama}
                                                                 </SelectItem>
@@ -387,7 +394,7 @@ export default function Jadwal({ sections, terms, subjects, gurus, activeTerm, f
                                                             <SelectValue placeholder="Pilih guru" />
                                                         </SelectTrigger>
                                                         <SelectContent>
-                                                            {gurus.map((guru) => (
+                                                            {safeGurus.map((guru) => (
                                                                 <SelectItem key={guru.id} value={guru.id.toString()}>
                                                                     {guru.name}
                                                                 </SelectItem>
@@ -406,7 +413,7 @@ export default function Jadwal({ sections, terms, subjects, gurus, activeTerm, f
                                                             <SelectValue placeholder="Pilih semester" />
                                                         </SelectTrigger>
                                                         <SelectContent>
-                                                            {terms.map((term) => (
+                                                            {safeTerms.map((term) => (
                                                                 <SelectItem key={term.id} value={term.id.toString()}>
                                                                     {termLabel(term)}
                                                                 </SelectItem>
@@ -535,7 +542,7 @@ export default function Jadwal({ sections, terms, subjects, gurus, activeTerm, f
                                             <SelectValue placeholder="Pilih semester" />
                                         </SelectTrigger>
                                         <SelectContent>
-                                            {terms.map((term) => (
+                                            {safeTerms.map((term) => (
                                                 <SelectItem key={term.id} value={term.id.toString()}>
                                                     {termLabel(term)}
                                                 </SelectItem>
@@ -563,14 +570,14 @@ export default function Jadwal({ sections, terms, subjects, gurus, activeTerm, f
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
-                                    {sections.data.length === 0 ? (
+                                    {(safeSections.data ?? []).length === 0 ? (
                                         <TableRow>
                                             <TableCell colSpan={6} className="py-8 text-center text-gray-500">
                                                 Tidak ada data jadwal
                                             </TableCell>
                                         </TableRow>
                                     ) : (
-                                        sections.data.map((section) => (
+                                        (safeSections.data ?? []).map((section) => (
                                             <TableRow key={section.id}>
                                                 <TableCell>
                                                     <div>
@@ -690,7 +697,7 @@ export default function Jadwal({ sections, terms, subjects, gurus, activeTerm, f
                                                 <SelectValue placeholder="Pilih mata pelajaran" />
                                             </SelectTrigger>
                                             <SelectContent>
-                                                {subjects.map((subject) => (
+                                                {safeSubjects.map((subject) => (
                                                     <SelectItem key={subject.id} value={subject.id.toString()}>
                                                         {subject.kode} - {subject.nama}
                                                     </SelectItem>
@@ -707,7 +714,7 @@ export default function Jadwal({ sections, terms, subjects, gurus, activeTerm, f
                                                 <SelectValue placeholder="Pilih guru" />
                                             </SelectTrigger>
                                             <SelectContent>
-                                                {gurus.map((guru) => (
+                                                {safeGurus.map((guru) => (
                                                     <SelectItem key={guru.id} value={guru.id.toString()}>
                                                         {guru.name}
                                                     </SelectItem>
@@ -726,7 +733,7 @@ export default function Jadwal({ sections, terms, subjects, gurus, activeTerm, f
                                                 <SelectValue placeholder="Pilih semester" />
                                             </SelectTrigger>
                                             <SelectContent>
-                                                {terms.map((term) => (
+                                                {safeTerms.map((term) => (
                                                     <SelectItem key={term.id} value={term.id.toString()}>
                                                         {termLabel(term)}
                                                     </SelectItem>
