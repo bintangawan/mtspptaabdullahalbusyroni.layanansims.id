@@ -43,10 +43,14 @@ class HandleInertiaRequests extends Middleware
             'name' => config('app.name'),
             'quote' => ['message' => trim($message), 'author' => trim($author)],
             'auth' => [
-                // PERBAIKAN: Tambahkan ->load('roles')
                 'user' => $request->user() ? $request->user()->load('roles') : null,
             ],
             'sidebarOpen' => ! $request->hasCookie('sidebar_state') || $request->cookie('sidebar_state') === 'true',
+            'flash' => [
+                'status'        => fn () => $request->session()->get('status'),
+                'error'         => fn () => $request->session()->get('error'),
+                'import_result' => fn () => $request->session()->get('import_result'),
+            ],
         ];
     }
 }

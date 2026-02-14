@@ -14,45 +14,81 @@ use Inertia\Inertia;
 class JadwalController extends Controller
 {
     public function index(Request $request)
-    {
-        $activeTerm = Term::where('aktif', true)->first();
+{
+    // Ambil term aktif (sesuai struktur tabel terms)
+    $activeTerm = Term::select(['id', 'tahun', 'semester', 'aktif'])
+        ->where('aktif', 1)
+        ->first();
 
-        $query = Section::with(['subject', 'guru', 'term'])
-            ->when($request->term_id, function ($q, $termId) {
-                return $q->where('term_id', $termId);
-            }, function ($q) use ($activeTerm) {
-                if ($activeTerm) {
-                    return $q->where('term_id', $activeTerm->id);
-                }
-            })
-            ->when($request->search, function ($q, $search) {
-                $q->where(function ($qq) use ($search) {
-                    $qq->whereHas('subject', function ($sq) use ($search) {
-                        $sq->where('nama', 'like', "%{$search}%")
-                            ->orWhere('kode', 'like', "%{$search}%");
-                    })->orWhereHas('guru', function ($gq) use ($search) {
-                        $gq->where('name', 'like', "%{$search}%");
-                    });
-                });
-            });
+    $query = Section::query()
+        ->select([
+            'id',
+            'subject_id',
+            'guru_id',
+            'term_id',
+            'kapasitas',
+            'jadwal_json',
+            'created_at'
+        ])
+        ->with([
+            'subject:id,nama,kode',
+            'guru:id,name',
+            'term:id,tahun,semester,aktif'
+        ])
+        ->whereHas('subject')
+        ->whereHas('guru')
+        ->whereHas('term');
 
-        $sections = $query->orderBy('id', 'desc')
-            ->paginate(15)
-            ->withQueryString();
-
-        $terms    = Term::orderBy('tahun', 'desc')->get();
-        $subjects = Subject::orderBy('nama')->get();
-        $gurus    = User::role('guru')->orderBy('name')->get();
-
-        return Inertia::render('Admin/Jadwal', [
-            'sections'   => $sections,
-            'terms'      => $terms,
-            'subjects'   => $subjects,
-            'gurus'      => $gurus,
-            'activeTerm' => $activeTerm,
-            'filters'    => $request->only(['search', 'term_id']),
-        ]);
+    // Filter term
+    if ($request->filled('term_id')) {
+        $query->where('term_id', $request->term_id);
+    } elseif ($activeTerm) {
+        $query->where('term_id', $activeTerm->id);
     }
+
+    // Filter search
+    if ($request->filled('search')) {
+        $search = $request->search;
+
+        $query->where(function ($q) use ($search) {
+            $q->whereHas('subject', function ($sq) use ($search) {
+                $sq->where('nama', 'like', "%{$search}%")
+                   ->orWhere('kode', 'like', "%{$search}%");
+            })
+            ->orWhereHas('guru', function ($gq) use ($search) {
+                $gq->where('name', 'like', "%{$search}%");
+            });
+        });
+    }
+
+    $sections = $query->orderByDesc('id')
+        ->paginate(15)
+        ->withQueryString();
+
+    // 🔥 ambil sesuai struktur asli tabel
+    $terms = Term::select(['id', 'tahun', 'semester', 'aktif'])
+        ->orderByDesc('tahun')
+        ->get();
+
+    $subjects = Subject::select(['id', 'nama', 'kode'])
+        ->orderBy('nama')
+        ->get();
+
+    $gurus = User::role('guru')
+        ->select(['id', 'name'])
+        ->orderBy('name')
+        ->get();
+
+    return Inertia::render('Admin/Jadwal', [
+        'sections'   => $sections,
+        'terms'      => $terms,
+        'subjects'   => $subjects,
+        'gurus'      => $gurus,
+        'activeTerm' => $activeTerm,
+        'filters'    => $request->only(['search', 'term_id']),
+    ]);
+}
+
 
     public function store(Request $request)
     {
@@ -179,72 +215,76 @@ class JadwalController extends Controller
      * Mengecek Guru Sibuk ATAU Mapel sudah ada jadwalnya
      */
     private function checkScheduleConflicts($guruId, $subjectId, $termId, $jadwalBaru, $excludeSectionId = null)
-{
-    $conflicts = [];
+    {
+        $conflicts = [];
 
-    // Ambil hanya kolom yang diperlukan (lebih ringan)
-    $existingSections = Section::where('term_id', $termId)
-        ->where(function($query) use ($guruId, $subjectId) {
-            $query->where('guru_id', $guruId)
-                  ->orWhere('subject_id', $subjectId);
-        })
-        ->when($excludeSectionId, function($q) use ($excludeSectionId) {
-            $q->where('id', '!=', $excludeSectionId);
-        })
-        ->select(['id', 'guru_id', 'subject_id', 'jadwal_json'])
-        ->with([
-            'subject:id,nama',
-            'guru:id,name'
-        ])
-        ->get();
+        // Ambil hanya kolom yang diperlukan (lebih ringan)
+        $existingSections = Section::where('term_id', $termId)
+            ->where(function ($query) use ($guruId, $subjectId) {
+                $query->where('guru_id', $guruId)
+                    ->orWhere('subject_id', $subjectId);
+            })
+            ->when($excludeSectionId, function ($q) use ($excludeSectionId) {
+                $q->where('id', '!=', $excludeSectionId);
+            })
+            ->select(['id', 'guru_id', 'subject_id', 'jadwal_json'])
+            ->with([
+                'subject:id,nama',
+                'guru:id,name',
+            ])
+            ->get();
 
-    // Flatten existing schedules dulu supaya tidak triple nested berat
-    $flattenedSchedules = [];
+        // Flatten existing schedules dulu supaya tidak triple nested berat
+        $flattenedSchedules = [];
 
-    foreach ($existingSections as $section) {
-        $schedules = is_string($section->jadwal_json)
-            ? json_decode($section->jadwal_json, true)
-            : ($section->jadwal_json ?? []);
+        foreach ($existingSections as $section) {
+            $schedules = is_string($section->jadwal_json)
+                ? json_decode($section->jadwal_json, true)
+                : ($section->jadwal_json ?? []);
 
-        if (!is_array($schedules)) continue;
+            if (! is_array($schedules)) {
+                continue;
+            }
 
-        foreach ($schedules as $schedule) {
-            $flattenedSchedules[] = [
-                'section' => $section,
-                'hari' => strtolower($schedule['hari']),
-                'start' => strtotime($schedule['jam_mulai']),
-                'end' => strtotime($schedule['jam_selesai']),
-                'jam_mulai' => $schedule['jam_mulai'],
-                'jam_selesai' => $schedule['jam_selesai'],
-            ];
+            foreach ($schedules as $schedule) {
+                $flattenedSchedules[] = [
+                    'section'     => $section,
+                    'hari'        => strtolower($schedule['hari']),
+                    'start'       => strtotime($schedule['jam_mulai']),
+                    'end'         => strtotime($schedule['jam_selesai']),
+                    'jam_mulai'   => $schedule['jam_mulai'],
+                    'jam_selesai' => $schedule['jam_selesai'],
+                ];
+            }
         }
-    }
 
-    // Sekarang cek jadwal baru terhadap flattened list
-    foreach ($jadwalBaru as $new) {
-        $newDay = strtolower($new['hari']);
-        $newStart = strtotime($new['jam_mulai']);
-        $newEnd = strtotime($new['jam_selesai']);
+        // Sekarang cek jadwal baru terhadap flattened list
+        foreach ($jadwalBaru as $new) {
+            $newDay   = strtolower($new['hari']);
+            $newStart = strtotime($new['jam_mulai']);
+            $newEnd   = strtotime($new['jam_selesai']);
 
-        foreach ($flattenedSchedules as $existing) {
+            foreach ($flattenedSchedules as $existing) {
 
-            if ($existing['hari'] !== $newDay) continue;
+                if ($existing['hari'] !== $newDay) {
+                    continue;
+                }
 
-            if ($newStart < $existing['end'] && $newEnd > $existing['start']) {
+                if ($newStart < $existing['end'] && $newEnd > $existing['start']) {
 
-                $section = $existing['section'];
-                $timeStr = ucfirst($newDay) . " ({$existing['jam_mulai']}-{$existing['jam_selesai']})";
+                    $section = $existing['section'];
+                    $timeStr = ucfirst($newDay) . " ({$existing['jam_mulai']}-{$existing['jam_selesai']})";
 
-                if ($section->subject_id == $subjectId) {
-                    $conflicts[] = "Mata pelajaran '{$section->subject->nama}' sudah dijadwalkan pada {$timeStr}.";
-                } elseif ($section->guru_id == $guruId) {
-                    $conflicts[] = "Guru '{$section->guru->name}' sedang mengajar '{$section->subject->nama}' pada {$timeStr}.";
+                    if ($section->subject_id == $subjectId) {
+                        $conflicts[] = "Mata pelajaran '{$section->subject->nama}' sudah dijadwalkan pada {$timeStr}.";
+                    } elseif ($section->guru_id == $guruId) {
+                        $conflicts[] = "Guru '{$section->guru->name}' sedang mengajar '{$section->subject->nama}' pada {$timeStr}.";
+                    }
                 }
             }
         }
-    }
 
-    return array_unique($conflicts);
-}
+        return array_unique($conflicts);
+    }
 
 }
