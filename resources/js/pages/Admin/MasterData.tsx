@@ -1120,12 +1120,20 @@ export default function MasterData({ terms, subjects, allSubjects, sections, gur
                                         <Input
                                             id="kapasitas"
                                             type="number"
-                                            value={(formData.kapasitas as number) ?? ''}
-                                            onChange={(e) => setFormData({ ...formData, kapasitas: parseInt(e.target.value) || 0 })}
+                                            value={formData.kapasitas !== undefined ? String(formData.kapasitas) : ''}
+                                            onChange={(e) => {
+                                                const val = e.target.value;
+                                                if (val === '') {
+                                                    const { kapasitas: _, ...rest } = formData;
+                                                    setFormData(rest);
+                                                } else {
+                                                    setFormData({ ...formData, kapasitas: parseInt(val) });
+                                                }
+                                            }}
                                             className="col-span-1 sm:col-span-3"
                                             placeholder="30"
                                             min={1}
-                                            max={100}
+                                            max={500}
                                         />
                                     </div>
                                 </>

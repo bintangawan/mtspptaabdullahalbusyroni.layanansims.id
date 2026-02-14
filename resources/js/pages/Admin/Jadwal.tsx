@@ -36,8 +36,8 @@ interface ScheduleItem {
 
 interface Term {
     id: number;
-    nama: string;
     tahun: string;
+    semester: 'ganjil' | 'genap';
     aktif: boolean;
 }
 
@@ -83,7 +83,7 @@ interface Props extends SharedData {
     terms: Term[];
     subjects: Subject[];
     gurus: Guru[];
-    activeTerm: Term;
+    activeTerm: Term | null;
     filters: {
         search?: string;
         term_id?: string;
@@ -98,6 +98,13 @@ const DAYS: Array<{ value: ScheduleItem['hari']; label: string }> = [
     { value: 'jumat', label: 'Jumat' },
     { value: 'sabtu', label: 'Sabtu' },
 ];
+
+/** Helper: tampilkan label term "Ganjil 2024/2025" */
+const termLabel = (term: Term | null | undefined): string => {
+    if (!term) return '-';
+    const sem = term.semester ? term.semester.charAt(0).toUpperCase() + term.semester.slice(1) : '';
+    return `${sem} ${term.tahun}`.trim();
+};
 
 /* ===================== Confirm Delete ===================== */
 type ConfirmDeleteDialogProps = {
@@ -255,9 +262,9 @@ export default function Jadwal({ sections, terms, subjects, gurus, activeTerm, f
         setEditingSection(section);
         clearErrors();
         setData({
-            subject_id: section.subject.id.toString(),
-            guru_id: section.guru.id.toString(),
-            term_id: section.term.id.toString(),
+            subject_id: section.subject?.id?.toString() ?? '',
+            guru_id: section.guru?.id?.toString() ?? '',
+            term_id: section.term?.id?.toString() ?? '',
             kapasitas: section.kapasitas?.toString() ?? '',
             jadwal:
                 section.jadwal_json && section.jadwal_json.length > 0
@@ -401,7 +408,7 @@ export default function Jadwal({ sections, terms, subjects, gurus, activeTerm, f
                                                         <SelectContent>
                                                             {terms.map((term) => (
                                                                 <SelectItem key={term.id} value={term.id.toString()}>
-                                                                    {term.nama} {term.tahun}
+                                                                    {termLabel(term)}
                                                                 </SelectItem>
                                                             ))}
                                                         </SelectContent>
@@ -530,7 +537,7 @@ export default function Jadwal({ sections, terms, subjects, gurus, activeTerm, f
                                         <SelectContent>
                                             {terms.map((term) => (
                                                 <SelectItem key={term.id} value={term.id.toString()}>
-                                                    {term.nama} {term.tahun}
+                                                    {termLabel(term)}
                                                 </SelectItem>
                                             ))}
                                         </SelectContent>
@@ -567,14 +574,14 @@ export default function Jadwal({ sections, terms, subjects, gurus, activeTerm, f
                                             <TableRow key={section.id}>
                                                 <TableCell>
                                                     <div>
-                                                        <div className="font-medium">{section.subject.nama}</div>
-                                                        <div className="text-sm text-gray-500">{section.subject.kode}</div>
+                                                        <div className="font-medium">{section.subject?.nama ?? '-'}</div>
+                                                        <div className="text-sm text-gray-500">{section.subject?.kode ?? ''}</div>
                                                     </div>
                                                 </TableCell>
-                                                <TableCell>{section.guru.name}</TableCell>
+                                                <TableCell>{section.guru?.name ?? '-'}</TableCell>
                                                 <TableCell>
-                                                    <Badge variant={section.term.aktif ? 'default' : 'secondary'}>
-                                                        {section.term.nama} {section.term.tahun}
+                                                    <Badge variant={section.term?.aktif ? 'default' : 'secondary'}>
+                                                        {termLabel(section.term)}
                                                     </Badge>
                                                 </TableCell>
                                                 <TableCell>{section.kapasitas || '-'}</TableCell>
@@ -606,8 +613,8 @@ export default function Jadwal({ sections, terms, subjects, gurus, activeTerm, f
                                                                     <Trash2 className="h-4 w-4" />
                                                                 </Button>
                                                             }
-                                                            title={`Hapus jadwal "${section.subject.nama}"?`}
-                                                            description={`Guru: ${section.guru.name}. Tindakan ini tidak dapat dibatalkan.`}
+                                                            title={`Hapus jadwal "${section.subject?.nama ?? '-'}"?`}
+                                                            description={`Guru: ${section.guru?.name ?? '-'}. Tindakan ini tidak dapat dibatalkan.`}
                                                             confirmWord="HAPUS"
                                                             isLoading={isDeleting}
                                                             onConfirm={() => handleDelete(section.id)}
@@ -721,7 +728,7 @@ export default function Jadwal({ sections, terms, subjects, gurus, activeTerm, f
                                             <SelectContent>
                                                 {terms.map((term) => (
                                                     <SelectItem key={term.id} value={term.id.toString()}>
-                                                        {term.nama} {term.tahun}
+                                                        {termLabel(term)}
                                                     </SelectItem>
                                                 ))}
                                             </SelectContent>

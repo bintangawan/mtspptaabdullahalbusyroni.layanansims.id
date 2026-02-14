@@ -286,7 +286,7 @@ class MasterDataController extends Controller
             'subject_id' => 'required|exists:subjects,id',
             'guru_id'    => 'required|exists:users,id',
             'term_id'    => 'required|exists:terms,id',
-            'kapasitas'  => 'nullable|integer|min:1|max:100',
+            'kapasitas'  => 'nullable|integer|min:1|max:500',
             'jadwal'     => 'nullable|array',
         ], [
             'subject_id.required' => 'Mata pelajaran wajib dipilih.',
@@ -322,7 +322,7 @@ class MasterDataController extends Controller
             'subject_id' => 'required|exists:subjects,id',
             'guru_id'    => 'required|exists:users,id',
             'term_id'    => 'required|exists:terms,id',
-            'kapasitas'  => 'nullable|integer|min:1|max:100',
+            'kapasitas'  => 'nullable|integer|min:1|max:500',
             'jadwal'     => 'nullable|array',
         ]);
 
@@ -612,7 +612,7 @@ class SectionImport implements ToCollection, WithHeadingRow
                 'guru_email'    => 'required|email',
                 'term_tahun'    => 'required|string',
                 'term_semester' => 'required|in:ganjil,genap',
-                'kapasitas'     => 'nullable|integer|min:1|max:100',
+                'kapasitas'     => 'nullable|integer|min:1|max:500',
             ]);
 
             if ($validator->fails()) {

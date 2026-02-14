@@ -14,80 +14,94 @@ use Inertia\Inertia;
 class JadwalController extends Controller
 {
     public function index(Request $request)
-{
-    // Ambil term aktif (sesuai struktur tabel terms)
-    $activeTerm = Term::select(['id', 'tahun', 'semester', 'aktif'])
-        ->where('aktif', 1)
-        ->first();
+    {
+        try {
+            // Ambil term aktif
+            $activeTerm = Term::select(['id', 'tahun', 'semester', 'aktif'])
+                ->where('aktif', 1)
+                ->first();
 
-    $query = Section::query()
-        ->select([
-            'id',
-            'subject_id',
-            'guru_id',
-            'term_id',
-            'kapasitas',
-            'jadwal_json',
-            'created_at'
-        ])
-        ->with([
-            'subject:id,nama,kode',
-            'guru:id,name',
-            'term:id,tahun,semester,aktif'
-        ])
-        ->whereHas('subject')
-        ->whereHas('guru')
-        ->whereHas('term');
+            $query = Section::query()
+                ->select([
+                    'id',
+                    'subject_id',
+                    'guru_id',
+                    'term_id',
+                    'kapasitas',
+                    'jadwal_json',
+                    'created_at',
+                ])
+                ->with([
+                    'subject:id,nama,kode',
+                    'guru:id,name',
+                    'term:id,tahun,semester,aktif',
+                ])
+                ->whereHas('subject')
+                ->whereHas('guru')
+                ->whereHas('term');
 
-    // Filter term
-    if ($request->filled('term_id')) {
-        $query->where('term_id', $request->term_id);
-    } elseif ($activeTerm) {
-        $query->where('term_id', $activeTerm->id);
+            // Filter term
+            if ($request->filled('term_id')) {
+                $query->where('term_id', $request->term_id);
+            } elseif ($activeTerm) {
+                $query->where('term_id', $activeTerm->id);
+            }
+
+            // Filter search
+            if ($request->filled('search')) {
+                $search = $request->search;
+
+                $query->where(function ($q) use ($search) {
+                    $q->whereHas('subject', function ($sq) use ($search) {
+                        $sq->where('nama', 'like', "%{$search}%")
+                           ->orWhere('kode', 'like', "%{$search}%");
+                    })
+                    ->orWhereHas('guru', function ($gq) use ($search) {
+                        $gq->where('name', 'like', "%{$search}%");
+                    });
+                });
+            }
+
+            $sections = $query->orderByDesc('id')
+                ->paginate(15)
+                ->withQueryString();
+
+            $terms = Term::select(['id', 'tahun', 'semester', 'aktif'])
+                ->orderByDesc('tahun')
+                ->get();
+
+            $subjects = Subject::select(['id', 'nama', 'kode'])
+                ->orderBy('nama')
+                ->get();
+
+            $gurus = User::role('guru')
+                ->select(['id', 'name'])
+                ->orderBy('name')
+                ->get();
+
+            return Inertia::render('Admin/Jadwal', [
+                'sections'   => $sections,
+                'terms'      => $terms,
+                'subjects'   => $subjects,
+                'gurus'      => $gurus,
+                'activeTerm' => $activeTerm,
+                'filters'    => $request->only(['search', 'term_id']),
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Error loading Jadwal index: ' . $e->getMessage(), [
+                'trace' => $e->getTraceAsString(),
+            ]);
+
+            return Inertia::render('Admin/Jadwal', [
+                'sections'   => ['data' => [], 'current_page' => 1, 'last_page' => 1, 'from' => null, 'to' => null, 'total' => 0, 'links' => []],
+                'terms'      => [],
+                'subjects'   => [],
+                'gurus'      => [],
+                'activeTerm' => null,
+                'filters'    => $request->only(['search', 'term_id']),
+            ]);
+        }
     }
-
-    // Filter search
-    if ($request->filled('search')) {
-        $search = $request->search;
-
-        $query->where(function ($q) use ($search) {
-            $q->whereHas('subject', function ($sq) use ($search) {
-                $sq->where('nama', 'like', "%{$search}%")
-                   ->orWhere('kode', 'like', "%{$search}%");
-            })
-            ->orWhereHas('guru', function ($gq) use ($search) {
-                $gq->where('name', 'like', "%{$search}%");
-            });
-        });
-    }
-
-    $sections = $query->orderByDesc('id')
-        ->paginate(15)
-        ->withQueryString();
-
-    // 🔥 ambil sesuai struktur asli tabel
-    $terms = Term::select(['id', 'tahun', 'semester', 'aktif'])
-        ->orderByDesc('tahun')
-        ->get();
-
-    $subjects = Subject::select(['id', 'nama', 'kode'])
-        ->orderBy('nama')
-        ->get();
-
-    $gurus = User::role('guru')
-        ->select(['id', 'name'])
-        ->orderBy('name')
-        ->get();
-
-    return Inertia::render('Admin/Jadwal', [
-        'sections'   => $sections,
-        'terms'      => $terms,
-        'subjects'   => $subjects,
-        'gurus'      => $gurus,
-        'activeTerm' => $activeTerm,
-        'filters'    => $request->only(['search', 'term_id']),
-    ]);
-}
 
 
     public function store(Request $request)
@@ -96,7 +110,7 @@ class JadwalController extends Controller
             'subject_id'           => 'required|exists:subjects,id',
             'guru_id'              => 'required|exists:users,id',
             'term_id'              => 'required|exists:terms,id',
-            'kapasitas'            => 'nullable|integer|min:1|max:100',
+            'kapasitas'            => 'nullable|integer|min:1|max:500',
             'jadwal'               => 'required|array|min:1',
             'jadwal.*.hari'        => 'required|in:senin,selasa,rabu,kamis,jumat,sabtu',
             'jadwal.*.jam_mulai'   => 'required|date_format:H:i',
@@ -144,7 +158,7 @@ class JadwalController extends Controller
             'subject_id'           => 'required|exists:subjects,id',
             'guru_id'              => 'required|exists:users,id',
             'term_id'              => 'required|exists:terms,id',
-            'kapasitas'            => 'nullable|integer|min:1|max:100',
+            'kapasitas'            => 'nullable|integer|min:1|max:500',
             'jadwal'               => 'required|array|min:1',
             'jadwal.*.hari'        => 'required|in:senin,selasa,rabu,kamis,jumat,sabtu',
             'jadwal.*.jam_mulai'   => 'required|date_format:H:i',
@@ -287,4 +301,34 @@ class JadwalController extends Controller
         return array_unique($conflicts);
     }
 
+    /**
+     * API endpoint: cek bentrok jadwal via GET (digunakan route admin.jadwal.conflicts)
+     */
+    public function checkConflicts(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'guru_id'              => 'required|exists:users,id',
+            'subject_id'           => 'required|exists:subjects,id',
+            'term_id'              => 'required|exists:terms,id',
+            'jadwal'               => 'required|array|min:1',
+            'jadwal.*.hari'        => 'required|in:senin,selasa,rabu,kamis,jumat,sabtu',
+            'jadwal.*.jam_mulai'   => 'required|date_format:H:i',
+            'jadwal.*.jam_selesai' => 'required|date_format:H:i|after:jadwal.*.jam_mulai',
+            'exclude_section_id'   => 'nullable|integer|exists:sections,id',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['conflicts' => [], 'errors' => $validator->errors()], 422);
+        }
+
+        $conflicts = $this->checkScheduleConflicts(
+            $request->guru_id,
+            $request->subject_id,
+            $request->term_id,
+            $request->jadwal,
+            $request->exclude_section_id
+        );
+
+        return response()->json(['conflicts' => $conflicts]);
+    }
 }
